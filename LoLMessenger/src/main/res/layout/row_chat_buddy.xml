@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:orientation="vertical"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:background="@drawable/white_balloon_left"
+                  android:paddingLeft="15dp"
+                  android:paddingTop="6dp"
+                  android:paddingRight="20dp"
+                  android:paddingBottom="8dp"
+                  android:layout_marginLeft="4dp"
+                  android:layout_marginRight="60dp"
+                  android:layout_gravity="left"
+                  android:minWidth="100dp"
+                  android:minHeight="60dp">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Text"
+                android:id="@+id/textViewMessage"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:layout_gravity="left"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="[hh:mm]"
+                android:id="@+id/textViewTimestamp"
+                android:gravity="center_vertical"
+                android:layout_gravity="left"
+                android:textColor="#888"
+                android:textSize="12sp"
+                android:paddingTop="4dp"/>
+    </LinearLayout>
+
+</FrameLayout>

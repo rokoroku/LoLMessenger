@@ -1,0 +1,86 @@
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+
+    <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/buddy_container"
+            android:orientation="horizontal"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingBottom="1dp"
+            android:paddingTop="1dp">
+
+        <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/profileicon"
+                android:layout_marginLeft="3dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/profile_icon_0"/>
+
+        <TextView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/profileiconSubstituteText"
+                android:layout_marginLeft="3dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"
+                android:layout_marginRight="10dp"
+                android:textColor="#fff"
+                android:gravity="center_vertical|center_horizontal"
+                android:visibility="gone"/>
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                >
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="띠부띠부"
+                    android:id="@+id/textViewName"
+                    android:textSize="16dp"
+                    android:layout_weight="1"
+                    android:textColor="#fff"
+                    android:singleLine="true"
+                    android:gravity="center_vertical"
+                    android:paddingTop="2dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="게임 중"
+                    android:id="@+id/textViewGameStatus"
+                    android:textSize="16dp"
+                    android:layout_weight="1"
+                    android:textColor="#1DB918"
+                    android:singleLine="true"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="2dp"/>
+
+        </LinearLayout>
+
+        <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:id="@+id/statusImageView"
+                android:layout_gravity="bottom"
+                android:focusable="false"
+                android:src="@drawable/icon_green"
+                android:baselineAlignBottom="false"
+                />
+    </LinearLayout>
+
+</FrameLayout>

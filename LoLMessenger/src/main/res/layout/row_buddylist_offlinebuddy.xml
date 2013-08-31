@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:baselineAligned="false"
+        android:gravity="center_vertical"
+        android:alpha="0.4"
+        >
+
+    <TextView
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:text="offline user"
+            android:id="@+id/textViewName2"
+            android:textSize="16dp"
+            android:layout_weight="1"
+            android:textColor="#ddd"
+            android:singleLine="true"
+            android:gravity="center_vertical"
+            android:autoText="false"
+            android:background="@drawable/buddy_container"
+            android:paddingLeft="40dp"/>
+
+</LinearLayout>

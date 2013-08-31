@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/transparent">
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="4dp">
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Recent Chat"
+                android:textColor="#bbb"
+                android:textSize="16dp"
+                android:gravity="center_horizontal"/>
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:clickable="false"
+                android:background="#1b3859"/>
+    </LinearLayout>
+
+    <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/chatListView"
+            android:dividerHeight="4dp"
+            android:divider="@android:color/transparent"/>
+</LinearLayout>

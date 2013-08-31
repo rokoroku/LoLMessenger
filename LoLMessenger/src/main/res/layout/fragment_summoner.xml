@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Loading progress -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:id="@+id/loading_status"
+                  android:visibility="gone"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="vertical"
+                  android:layout_gravity="center"
+                  android:gravity="center_vertical|center_horizontal"
+                  android:padding="8dp">
+
+        <ProgressBar style="?android:attr/progressBarStyleLarge"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_marginBottom="8dp"
+                     android:layout_gravity="center"/>
+    </LinearLayout>
+
+    <!-- summoner interface -->
+    <LinearLayout android:id="@+id/summoner_form"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="vertical"
+                  android:padding="5dp"
+            >
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="78dp"
+                android:background="@drawable/background_summonerprofilebox"
+                android:orientation="horizontal"
+                android:baselineAligned="false"
+                android:paddingLeft="12dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:paddingRight="12dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp">
+
+            <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:id="@+id/summonerIcon"
+                    android:background="@drawable/profile_icon_502"
+                    android:layout_gravity="center_vertical"
+                    />
+
+            <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="10dp">
+
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="띠부띠부"
+                        android:id="@+id/summonerName"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:textSize="16dp"
+                        android:textColor="@android:color/white"/>
+
+                <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                    <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:text="레벨 30"
+                            android:id="@+id/summonerLevel"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:textSize="16dp"
+                            android:textColor="@android:color/white"/>
+
+                    <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="right"
+                            android:id="@+id/FWOTDview">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="16dp"
+                                android:text="3:15:55"
+                                android:id="@+id/FWOTDtime"
+                                android:textSize="11dp"
+                                android:layout_gravity="bottom"
+                                android:gravity="center_vertical"/>
+
+                        <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:id="@+id/FWOTDicon"
+                                android:src="@drawable/icon_bonus_off"
+                                android:layout_gravity="bottom"
+                                android:layout_marginLeft="4dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="70dp"
+                android:orientation="vertical"
+                android:layout_marginBottom="6dp">
+
+            <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="68dp"
+                    android:src="@drawable/btn_default_disabled_holo_dark"
+                    android:scaleType="fitXY"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"/>
+
+            <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    >
+
+                <ImageView
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:id="@+id/tierIcon"
+                        android:src="@drawable/medals_silver"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentTop="false"
+                        android:layout_centerInParent="true"
+                        android:focusableInTouchMode="false"
+                        android:layout_gravity="center"/>
+
+                <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:gravity="center_horizontal"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentTop="false"
+                        android:layout_centerInParent="true">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="플래티넘 단계 V"
+                            android:id="@+id/tierText"
+                            android:textColor="@android:color/white"
+                            android:singleLine="false"
+                            android:textSize="13dp"
+                            />
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="타릭의 원소술사들"
+                            android:id="@+id/tierGroup"
+                            android:textColor="@android:color/white"
+                            android:textSize="13dp"
+                            />
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="승:59 포인트:15"
+                            android:id="@+id/tierStat"
+                            android:textColor="@android:color/white"
+                            android:textSize="13dp"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <ListView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:id="@+id/matchlistView"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:layout_marginBottom="8dp"/>
+
+    </LinearLayout>
+</LinearLayout>

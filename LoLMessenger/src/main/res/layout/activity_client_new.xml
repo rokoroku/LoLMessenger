@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/frame"
+            android:baselineAligned="false">
+
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+            <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:id="@+id/statusIcon"
+                    android:focusable="false"
+                    android:src="@drawable/icon_green"
+                    android:baselineAlignBottom="false"
+                    android:layout_gravity="top"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="1dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="4dp"/>
+
+            <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown"
+                    android:id="@+id/spinner"
+                    android:gravity="left"
+                    android:minWidth="140dp"
+                    android:layout_gravity="bottom"
+                    />
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="20dp">
+
+            <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:id="@+id/tab_indi1"
+                    android:background="@drawable/tab_underbar"
+                    android:minWidth="50dp">
+
+                <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true">
+
+                    <ImageView
+                            android:layout_width="36dp"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_buddy_focused"
+                            android:cropToPadding="false"
+                            android:layout_gravity="center"
+                            android:visibility="visible"/>
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/text_buddycount"
+                            android:textColor="#fff"
+                            android:layout_gravity="center"
+                            android:gravity="center_horizontal"
+                            android:autoText="false"
+                            android:textSize="12dp"
+                            android:text="0"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:id="@+id/tab_indi2"
+                    android:alpha="0.3"
+                    android:minWidth="50dp">
+
+                <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true">
+
+                    <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:src="@drawable/ic_chat_focused"
+                            android:cropToPadding="false"
+                            android:layout_gravity="center"
+                            android:scaleType="fitXY"/>
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:id="@+id/text_chatcount"
+                            android:textColor="#fff"
+                            android:layout_gravity="center"
+                            android:gravity="center_horizontal"/>
+
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:id="@+id/tab_indi3"
+                    android:alpha="0.3"
+                    android:minWidth="50dp">
+
+                <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true">
+
+                    <ImageView
+                            android:layout_width="38dp"
+                            android:layout_height="26dp"
+                            android:src="@drawable/ic_infomation_2"
+                            android:cropToPadding="false"
+                            android:layout_gravity="center"
+                            android:scaleType="fitXY"
+                            android:padding="2dp"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="4dp"
+            android:background="@drawable/background"/>
+
+</LinearLayout>

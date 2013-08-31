@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:background="@drawable/dialog_frame"
+              android:padding="20dp">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+        <ImageView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:id="@+id/summoner_icon"
+                android:src="@drawable/profile_icon_26"/>
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="띠부띠부"
+                    android:id="@+id/summoner_name"
+                    android:textSize="18dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@android:color/white"/>
+
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/divider"
+                    android:layout_gravity="center_horizontal"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="레벨 30"
+                    android:id="@+id/summoner_level"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@android:color/white"
+                    android:textSize="14dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="골드 단계 V"
+                    android:id="@+id/tier"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="#cc7024"
+                    android:layout_marginTop="8dp"
+                    android:textSize="14dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="바루스의 용기병단"
+                    android:id="@+id/tierGroup"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="#cc7024"
+                    android:textSize="14dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="게임 중"
+                    android:id="@+id/status1"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="#ffe800"
+                    android:textSize="14dp"
+                    android:layout_marginTop="8dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="플레이 중인 챔피언 : 레오나"
+                    android:id="@+id/status2"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="#ffe800"
+                    android:textSize="14dp"
+                    android:singleLine="false"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="21분 경과"
+                    android:id="@+id/timestamp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="#ffe800"
+                    android:singleLine="true"
+                    android:textSize="14dp"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="Chat"
+                android:id="@+id/buttonChat"
+                android:background="@drawable/btn_lol_style"
+                android:layout_weight="1"
+                android:textSize="14dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"/>
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="View"
+                android:id="@+id/buttonLook"
+                android:background="@drawable/btn_lol_style"
+                android:layout_weight="1"
+                android:textSize="14dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"/>
+    </LinearLayout>
+
+</LinearLayout>
