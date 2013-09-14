@@ -1,27 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">LoL Messenger</string>
+    <string name="client_version">3.11.xx</string>
+    <string name="client_version_2">3.12.xx</string>
+
+    <string name="app_name">LOL Messenger</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-    <string name="title_activity_login">Sign In</string>
-    <string name="sign_in">Sign in</string>
+
+    <string name="title_activity_login">Log in</string>
+    <string name="sign_in">Log in</string>
     <string name="hint_id">PVP.net ID</string>
     <string name="hint_password">Password</string>
-    <string name="title_activity_splash">Connecting...</string>
-    <string name="connecting_message">Trying to connect ...</string>
-    <string name="login_progress_signing_in">Trying to connect ...</string>
+    <string name="remember_account">Remember</string>
+    <string name="login_automatically">Auto-Login</string>
+    <string name="connecting_message">Trying to connect …</string>
+    <string name="login_progress_signing_in">Trying to connect …</string>
     <string name="error_field_required">Input Data Required</string>
-    <string name="title_buddy_list">ClientActivity</string>
-    <string name="action_logout">Log out</string>
-    <string name="title_activity_client_activity_new">Client</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+
+    <string name="title_activity_client">ClientActivity</string>
     <string name="title_activity_chat">ChatActivity</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_editing">Change status message</string>
+    <string name="title_chatlist">Recent Chat</string>
+    <string name="title_buddylist">Friends</string>
+    <string name="title_settings">Settings</string>
+
+    <string name="action_logout">Log out</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_delete_chat">Delete Chat</string>
-    <string name="title_activity_editing">Enter new ...</string>
-    <string name="remember_account">Remember Account Information</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_send">Send</string>
+    <string name="action_chat">Chat</string>
+    <string name="action_view">View</string>
+    <string name="action_accept">Accept</string>
+    <string name="action_reject">Reject</string>
+
+    <string name="client_spinner_item_01">Chat</string>
+    <string name="client_spinner_item_02">Away</string>
+    <string name="client_spinner_item_03">Offline</string>
+    <string name="client_spinner_item_04">Setting</string>
+    <string name="client_spinner_item_05">Exit app</string>
+
+    <string name="status_inGame">In game</string>
+    <string name="status_inNormalGame">Normal Game</string>
+    <string name="status_inRankedGame">Ranked Game</string>
+    <string name="status_inCustomGame">Custom Game</string>
+    <string name="status_inAIGame">Co-op Game</string>
+    <string name="status_teamSelect">Selecting Team</string>
+    <string name="status_hostingPracticeGame">Hosting a practice game</string>
+    <string name="status_nowPlayingChamp">Playing as</string>
+    <string name="status_lookingNewGame">Finding Game</string>
+    <string name="status_timestamp_minute">min</string>
+    <string name="status_away">Away</string>
+    <string name="status_online">Online</string>
+    <string name="status_level">Level</string>
+    <string name="status_league_point">LP</string>
+    <string name="status_first_win_bonus_available">Available</string>
+
+    <string name="error_failure_retrieving_chatting_list">Failed to retrieve chatting list</string>
+    <string name="error_failure_retrieving_summoner">Failed to retrieve summoner data</string>
+    <string name="error_failure_retrieving_roster">Failed to retrieve roster list</string>
+
+    <string name="dialog_title_delete_all_chatting_log">Delete Chatting Logs</string>
+    <string name="dialog_title_delete_chat">Delete Chat</string>
+    <string name="dialog_content_delete_chatting_log">Are you sure?\nDeleted message cannot be restored</string>
+    <string name="dialog_title_logout">Log Out</string>
+    <string name="dialog_content_logout">Are you sure ?</string>
+    <string name="dialog_title_exit">Exit Application</string>
+    <string name="dialog_content_exit">Are you sure ?</string>
+
+    <string name="status_offline">Offline</string>
+    <string name="error_login_failed_timeout">Connection timeout, try again later</string>
+    <string name="error_login_failed_interrupted">Login task interrupted</string>
+    <string name="error_login_failed_not_responding">Server not responding, try again later</string>
+    <string name="error_login_failed_check_connection">Login failed. Check internet connection</string>
+    <string name="spinner_login_title_choose_server">Choose server to connect</string>
+    <string name="notification_lost_connection">Lost connection</string>
+    <string name="notification_lost_connection_on_error">Lost connection on error</string>
+    <string name="notification_reconnecting">Reconnecting…</string>
+    <string name="notification_disconnected">LOL messenger disconnected</string>
+    <string name="notification_reconnection_failed">Reconnection Failed</string>
+    <string name="notification_app_running">LOL messenger is running</string>
+    <string name="notification_login_as">Logged in as</string>
+    <string name="login_process_connecting">Connecting…</string>
+    <string name="login_process_chattingserver">Logging onto chat service…</string>
+    <string name="login_process_success">Login Success</string>
+    <string name="default_status_message">Using Android Client</string>
+    <string name="match_leave">Leave</string>
+    <string name="match_victory">Victory</string>
+    <string name="match_defeat">Defeat</string>
+    <string name="match_exp">EXP</string>
+    <string name="match_ip">IP</string>
+    <string name="match_type_normal">normal game</string>
+    <string name="match_type_ranked">ranked game</string>
+    <string name="match_type_custom">custom game</string>
+    <string name="match_type_coop">co-op game</string>
+    <string name="match_mode_aram">ARAM</string>
+    <string name="match_mode_classic">Classic</string>
+    <string name="match_mode_odin">Dominion</string>
+    <string name="match_mode_pick_blind">Blind Pick</string>
+    <string name="match_mode_pick_random">All Random</string>
+    <string name="match_mode_draft_std">Draft Mode</string>
+    <string name="match_mode_draft_tournament">Tournament Draft</string>
+
+    <string name="setting_title_notification">Notification Settings</string>
+    <string name="setting_sound">Sound</string>
+    <string name="setting_vibrate">Vibrate</string>
+    <string name="setting_new_message_alert">New message alert</string>
+    <string name="setting_ongoing_notification">Combine notification</string>
+    <string name="setting_title_account">User Presences</string>
+    <string name="setting_account">Account</string>
+    <string name="setting_status_message">Status Message</string>
+    <string name="setting_title_others">Others</string>
+    <string name="setting_clear_logs">Clear chatting logs</string>
+    <string name="setting_title_about">About</string>
+    <string name="setting_contact">Contact</string>
+    <string name="setting_license">License</string>
+    <string name="license">Asmack API (OpenLDAP license)\n - https://github.com/Flowdalic/asmack\n
+        \nLeagueLib (GPLv3 license)\n - https://github.com/achimala/leaguelib\n
+        \nLeague of Legends is trademarks or registered trademarks of Riot Games, Inc.
+    </string>
+
+    <string name="setting_title_friendlist">Friends List Settings</string>
+    <string name="setting_show_gametype">Show game type</string>
+    <string name="setting_show_champion">Show playing champion</string>
+    <string name="setting_show_timestamp">Show elapsed time</string>
+
+    <string name="status_message_hint">Change status message here.</string>
+    <string name="status_spectating">Spectating</string>
+    <string name="error_check_password">Check password</string>
+    <string name="action_back_to_quit">Please click BACK again to cancel.</string>
+    <string name="error_cancelled">Cancelled.</string>
+
+    <string name="notification_inbox_title">New Messages</string>
+    <string name="message_logging_in_line">Logging on… in queue :</string>
+    <string name="error_wrong_client_version">Wrong client version for server, retry </string>
+    <string name="unknown_entry">Unknown</string>
+    <string name="unknown_entry_description">User not found in the friend list.</string>
+
+    <string name="dialog_title_buddy_subscription">Buddy Subscription Request</string>
+    <string name="dialog_content_buddy_subscription" formatted="false">The buddy %s wants to add you to their list and see your presence online.</string>
+    <string name="message_invite_game" formatted="false">Invite you to play a game.\n\nmode: %s\nmap: %s\ntype: %s</string>
+
+    <string name="notification_title_buddy_subscription">New friend request</string>
+    <string name="notification_content_buddy_subscription" formatted="false">%s wants to add you as a friend.</string>
+
+    <string name="default_group">General</string>
+    <string name="notification_total_unread">%d unread</string>
+    <string name="setting_show_toast">Show toast</string>
 
 </resources>

@@ -1,0 +1,65 @@
+    <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:minWidth="180dp"
+        android:background="#bb264568"
+        android:padding="10dp"
+        android:id="@+id/button_submit">
+
+        <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/profileicon"
+            android:src="@drawable/profile_icon_0"
+            android:layout_gravity="center" />
+
+        <TextView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/profileiconSubstituteText"
+                android:layout_marginLeft="3dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"
+                android:layout_marginRight="10dp"
+                android:textColor="#fff"
+                android:gravity="center_vertical|center_horizontal"
+                android:visibility="gone"/>
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+            android:layout_marginLeft="8dp">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="띠부띠부"
+                    android:id="@+id/textViewName"
+                    android:textSize="18dp"
+                    android:layout_weight="1"
+                    android:textColor="#fff"
+                    android:singleLine="true"
+                    android:gravity="top"
+                android:maxWidth="180dp" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="안녕하세여?"
+                    android:id="@+id/textViewMessage"
+                    android:textSize="14dp"
+                    android:layout_weight="1"
+                    android:textColor="#ddd"
+                    android:singleLine="true"
+                android:paddingBottom="2dp"
+                android:maxWidth="180dp"
+                android:gravity="bottom" />
+
+        </LinearLayout>
+
+    </LinearLayout>

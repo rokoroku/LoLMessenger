@@ -2,6 +2,7 @@ package com.rokoroku.lolmessenger.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import com.rokoroku.lolmessenger.ClientActivity;
 import com.rokoroku.lolmessenger.R;
 import com.rokoroku.lolmessenger.classes.ParcelableRoster;
+import com.rokoroku.lolmessenger.utilities.ChatlistViewAdapter;
 import com.rokoroku.lolmessenger.utilities.RosterAdapter;
 
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ import java.util.Map;
 /**
  * Created by Youngrok Kim on 13. 8. 22.
  */
-public class BuddyListFragment extends Fragment implements ExpandableListView.OnChildClickListener {
+public class BuddyListFragment extends Fragment {
 
     private final String TAG = "com.example.lolmessenger.BuddyListFragment";
 
@@ -29,10 +31,10 @@ public class BuddyListFragment extends Fragment implements ExpandableListView.On
     private ClientActivity mActivity = null;
     protected Map<String, ParcelableRoster> mRosterMap = null;
     private ArrayList<String> mRosterGroupList = null;
-
     private boolean isReady = false;
 
     ExpandableListView mExpandbleListView = null;
+    RosterAdapter mAdapter = null;
 
     public BuddyListFragment() {
     }
@@ -56,6 +58,9 @@ public class BuddyListFragment extends Fragment implements ExpandableListView.On
         super.onViewCreated(view, savedInstanceState);
         mExpandbleListView = (ExpandableListView) getView().findViewById(R.id.expandableListView);
 
+        if(mActivity == null) {
+            mActivity = (ClientActivity)getActivity();
+        }
         if(mActivity.isReady()) {
             refreshBuddyList();
             isReady = true;
@@ -76,22 +81,13 @@ public class BuddyListFragment extends Fragment implements ExpandableListView.On
     }
 
     @Override
-    public boolean onChildClick(ExpandableListView parent, View v,
-                                int groupPosition, int childPosition, long id) {
-        Toast.makeText(mActivity, "Clicked On Child", Toast.LENGTH_SHORT).show();
-        return true;
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        Log.i(TAG,"onResume()");
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.i(TAG,"onStart()");
     }
 
     public void refreshBuddyList() {
@@ -99,14 +95,23 @@ public class BuddyListFragment extends Fragment implements ExpandableListView.On
         mRosterMap = ((ClientActivity) mActivity).getRosterMap();
         mRosterGroupList = ((ClientActivity) mActivity).getRosterGroupList();
 
-        RosterAdapter mNewAdapter = new RosterAdapter( mRosterMap, mRosterGroupList );
+        if(mRosterMap != null && mRosterGroupList != null) {
 
-        mNewAdapter.setInflater((LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE), mActivity);
-        mExpandbleListView = (ExpandableListView) getView().findViewById(R.id.expandableListView);
-        mExpandbleListView.setAdapter(mNewAdapter);
-        mExpandbleListView.setOnChildClickListener(this);
-        for(int i=0; i<mRosterGroupList.size()-1; i++) {
-            mExpandbleListView.expandGroup(i);
+            if(mExpandbleListView.getAdapter() == null) {
+                mAdapter = new RosterAdapter( mRosterMap, mRosterGroupList );
+                mAdapter.setInflater((LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE), mActivity);
+                mExpandbleListView.setAdapter(mAdapter);
+                for(int i=0; i<mRosterGroupList.size()-1; i++) {
+                    mExpandbleListView.expandGroup(i);
+                }
+            } else {
+                mAdapter.setItem( mRosterMap, mRosterGroupList );
+                mAdapter.notifyDataSetChanged();
+            }
+
+        } else {
+            Toast.makeText(mActivity.getApplicationContext(), mActivity.getString(R.string.error_failure_retrieving_roster), Toast.LENGTH_SHORT).show();
+            mActivity.doLogout(true);
         }
     }
 

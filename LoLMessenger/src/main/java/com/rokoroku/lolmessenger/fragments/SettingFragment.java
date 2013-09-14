@@ -2,16 +2,16 @@ package com.rokoroku.lolmessenger.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +22,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.rokoroku.lolmessenger.ClientActivity;
-import com.rokoroku.lolmessenger.EditingActivity;
+import com.rokoroku.lolmessenger.LolMessengerApplication;
 import com.rokoroku.lolmessenger.R;
 import com.rokoroku.lolmessenger.classes.ParcelableRoster;
 
@@ -49,23 +49,32 @@ public class SettingFragment extends DialogFragment {
     private Button mButtonDropTable;
     private Switch mSwitchRunningNotification;
     private Switch mSwitchMessageNotification;
+    private Switch mSwitchShowToast;
     private Switch mSwitchVibration;
     private Switch mSwitchSound;
+    private Switch mSwitchShowGameQueueType;
+    private Switch mSwitchShowPlayingChampion;
+    private Switch mSwitchShowTimestamp;
 
     private boolean mRunningNotification;
     private boolean mMessageNotification;
+    private boolean mFriendRequestNotification;
+    private boolean mShowToast;
     private boolean mVibration;
     private boolean mSound;
+    private boolean mShowGameQueuetype;
+    private boolean mShowPlayingChampion;
+    private boolean mShowTimestamp;
 
+    private boolean isEditing = false;
     private boolean isReady = false;
 
 
     public SettingFragment() {
     }
 
-    public SettingFragment(ClientActivity activity, String userAccount, ParcelableRoster userRoster) {
+    public SettingFragment(ClientActivity activity, ParcelableRoster userRoster) {
         this.mActivity = activity;
-        this.mUserAccount = userAccount;
         this.mPresense = userRoster;
     }
 
@@ -75,26 +84,39 @@ public class SettingFragment extends DialogFragment {
         // the content
         //final RelativeLayout root = new RelativeLayout(getActivity());
         //root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        //root.setPadding(20, 20, 20, 20);
+
+        // retrieve display dimensions
+        DisplayMetrics metrics = new DisplayMetrics();
+        //getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        //int width = (int)( metrics.widthPixels * 0.8);
+        //int height = (int)( metrics.heightPixels * 0.8);
 
         // creating the fullscreen dialog
         final Dialog dialog = new Dialog(getActivity());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.setCanceledOnTouchOutside(true);
         dialog.setCancelable(true);
         //dialog.setContentView(root);
-        //dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_frame);
 
         return dialog;
     }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferences prefs = mActivity.getSharedPreferences( "settings", Context.MODE_PRIVATE);
-        mRunningNotification= prefs.getBoolean("RunningNotification", true);
-        mMessageNotification= prefs.getBoolean("MessageNotification", true);
-        mVibration          = prefs.getBoolean("Vibration", true);
-        mSound              = prefs.getBoolean("Sound", true);
+
+        LolMessengerApplication application = (LolMessengerApplication)getActivity().getApplication();
+
+        mRunningNotification= application.isRunningNotification();
+        mMessageNotification= application.isMessageNotification();
+        mVibration          = application.isVibration();
+        mSound              = application.isSound();
+        mShowGameQueuetype  = application.isShowGameQueuetype();
+        mShowPlayingChampion= application.isShowPlayingChampion();
+        mShowTimestamp      = application.isShowTimestamp();
+        mShowToast          = application.isShowToast();
+
     }
 
     @Override
@@ -107,7 +129,6 @@ public class SettingFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         if(mActivity == null) mActivity = (ClientActivity)getActivity();
-        if(mUserAccount == null) mUserAccount = mActivity.getUserAccount();
         if(mPresense == null) mPresense = mActivity.getUserPresence();
 
         mAccountView = (TextView) view.findViewById(R.id.textAccount);
@@ -122,20 +143,30 @@ public class SettingFragment extends DialogFragment {
 
         mSwitchRunningNotification  = (Switch) view.findViewById(R.id.toggle_keep_notify);
         mSwitchMessageNotification  = (Switch) view.findViewById(R.id.toggle_incomming_notify);
+        mSwitchShowToast            = (Switch) view.findViewById(R.id.toggle_toast);
         mSwitchVibration            = (Switch) view.findViewById(R.id.toggle_vibration);
         mSwitchSound                = (Switch) view.findViewById(R.id.toggle_sound);
+        mSwitchShowGameQueueType    = (Switch) view.findViewById(R.id.toggle_show_gametype);
+        mSwitchShowPlayingChampion  = (Switch) view.findViewById(R.id.toggle_show_champion);
+        mSwitchShowTimestamp        = (Switch) view.findViewById(R.id.toggle_show_timestamp);
+
 
         mSwitchRunningNotification.setChecked(mRunningNotification);
         mSwitchMessageNotification.setChecked(mMessageNotification);
         mSwitchVibration.setChecked(mVibration);
         mSwitchSound.setChecked(mSound);
+        mSwitchShowGameQueueType.setChecked(mShowGameQueuetype);
+        mSwitchShowPlayingChampion.setChecked(mShowPlayingChampion);
+        mSwitchShowTimestamp.setChecked(mShowTimestamp);
+        mSwitchShowToast.setChecked(mShowToast);
 
         PackageManager pm = mActivity.getPackageManager();
         PackageInfo pi = null;
 
+        //get version name
         try {
             pi = pm.getPackageInfo(mActivity.getPackageName(),PackageManager.GET_META_DATA);
-            mAppVersionVIew.setText("(v" + pi.versionName + ")");
+            mAppVersionVIew.setText(new String("(v" + pi.versionName + ")"));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -172,6 +203,39 @@ public class SettingFragment extends DialogFragment {
                 updateSetting();
             }
         });
+        mSwitchShowGameQueueType.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                getView().playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                mShowGameQueuetype = b;
+                updateSetting();
+            }
+        });
+        mSwitchShowPlayingChampion.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                getView().playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                mShowPlayingChampion = b;
+                updateSetting();
+            }
+        });
+        mSwitchShowTimestamp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                getView().playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                mShowTimestamp = b;
+                updateSetting();
+            }
+        });
+        mSwitchShowToast.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                getView().playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                mShowToast = b;
+                updateSetting();
+            }
+        });
+
 
         mBoxStatusMsg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -179,12 +243,12 @@ public class SettingFragment extends DialogFragment {
                 editStatusMessage();
             }
         });
-        mStatusMsgView.setOnClickListener(new View.OnClickListener() {
+        /*mStatusMsgView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mBoxStatusMsg.callOnClick();
             }
-        });
+        });*/
         mBoxMailto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -194,7 +258,7 @@ public class SettingFragment extends DialogFragment {
         mButtonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mActivity.doLogout();
+                mActivity.doLogout(true);
             }
         });
         mButtonDropTable.setOnClickListener(new View.OnClickListener() {
@@ -203,7 +267,6 @@ public class SettingFragment extends DialogFragment {
                 deleteTable();
             }
         });
-
         isReady = true;
         refreshSettings();
     }
@@ -211,57 +274,79 @@ public class SettingFragment extends DialogFragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if (isVisibleToUser) {
-            // 보인다.
             if(isReady) refreshSettings();
-        } else {
-            // 안보인다.
         }
         super.setUserVisibleHint(isVisibleToUser);
     }
 
     public void refreshSettings() {
         if(this.isReady) {
-            mAccountView.setText(mUserAccount);
-            mStatusMsgView.setText(mPresense.getStatusMsg());
+            mAccountView.setText(new String(LolMessengerApplication.getUserAccount()));
+            mStatusMsgView.setText(new String(mPresense.getStatusMsg()));
         }
     }
 
     public void updateSetting() {
-        SharedPreferences prefs = mActivity.getSharedPreferences("settings", Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putBoolean("RunningNotification", mRunningNotification);
-        ed.putBoolean("MessageNotification", mMessageNotification);
-        ed.putBoolean("Vibration", mVibration);
-        ed.putBoolean("Sound", mSound);
-        ed.commit();
 
         Bundle bundleSettings = new Bundle();
         bundleSettings.putBoolean("RunningNotification", mRunningNotification);
         bundleSettings.putBoolean("MessageNotification", mMessageNotification);
         bundleSettings.putBoolean("Vibration", mVibration);
         bundleSettings.putBoolean("Sound", mSound);
+        bundleSettings.putBoolean("ShowPlayingChampion", mShowPlayingChampion);
+        bundleSettings.putBoolean("ShowGameQueueType", mShowGameQueuetype);
+        bundleSettings.putBoolean("ShowTimestamp", mShowTimestamp);
+        bundleSettings.putBoolean("ShowToast", mShowToast);
+
         mActivity.updateSetting(bundleSettings);
     }
 
     public void editStatusMessage() {
-        Intent intent = new Intent(mActivity, EditingActivity.class);
-        intent.putExtra("original_status_message", mPresense.getStatusMsg());
-        startActivityForResult(intent, EDIT_STATUS_MSG);
+        final EditTextDialog dialog = new EditTextDialog();
+        dialog.setDialogContent(mPresense.getStatusMsg());
+        dialog.setPositiveOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mPresense.setStatusMsg(dialog.getText());
+                mActivity.updatePresence(mPresense);
+                mActivity.refreshStatus();
+                refreshSettings();
+            }
+        });
+        FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
+        Fragment prev = mActivity.getSupportFragmentManager().findFragmentByTag("dialog_2");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        dialog.show(ft, "dialog_2");
+
+        //mStatusEditTextView.setText(mStatusMsgView.getText());
+        //mBoxStatusMsg.setVisibility(View.GONE);
+        //mBoxEditStatusMsg.setVisibility(View.VISIBLE);
+        //isEditing = true;
+
+        //Intent intent = new Intent(mActivity, EditingActivity.class);
+        //intent.putExtra("original_status_message", mPresense.getStatusMsg());
+        //startActivityForResult(intent, EDIT_STATUS_MSG);
     }
 
     public void deleteTable() {
         ConfirmationDialog dialog = new ConfirmationDialog();
-        dialog.setDialogTitle("Delete Chatting Log");
-        dialog.setDialogContent("Are you sure? \nDeleted message cannot be restored");
+        dialog.setDialogTitle(mActivity.getString(R.string.dialog_title_delete_all_chatting_log));
+        dialog.setDialogContent(mActivity.getString(R.string.dialog_content_delete_chatting_log));
         dialog.setPositiveOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mActivity.getSQLiteDbAdapter().deleteAllRecords(mActivity.getUserID());
+                mActivity.getSQLiteDbAdapter().deleteAllRecords();
+                dismiss();
             }
         });
 
         FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
-        Fragment prev = mActivity.getSupportFragmentManager().findFragmentByTag("dialog");
+        Fragment prev = mActivity.getSupportFragmentManager().findFragmentByTag("dialog_2");
 
         if (prev != null) {
             ft.remove(prev);
@@ -269,7 +354,7 @@ public class SettingFragment extends DialogFragment {
         ft.addToBackStack(null);
 
         // Create and show the dialog.
-        dialog.show(ft, "dialog");
+        dialog.show(ft, "dialog_2");
     }
 
     @Override
@@ -278,7 +363,8 @@ public class SettingFragment extends DialogFragment {
         switch(requestCode){
             case EDIT_STATUS_MSG:
                 if(resultCode == Activity.RESULT_OK){
-                    mPresense.setStatusMsg( intent.getStringExtra("statusMsg") );
+                    String text = intent.getStringExtra("statusMsg");
+                    mPresense.setStatusMsg(text);
                     mActivity.updatePresence(mPresense);
                     mActivity.refreshStatus();
                     refreshSettings();
@@ -290,7 +376,8 @@ public class SettingFragment extends DialogFragment {
 
     public void mailto() {
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "rok0810@gmail.com", null));
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "I love you");
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Using LOL Messenger for Android.");
         startActivity(Intent.createChooser(emailIntent, "Send email..."));
     }
+
 }

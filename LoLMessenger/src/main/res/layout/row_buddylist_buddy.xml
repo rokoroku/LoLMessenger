@@ -9,10 +9,10 @@
             android:layout_height="48dp"
             android:background="@drawable/buddy_container"
             android:orientation="horizontal"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
             android:paddingBottom="1dp"
             android:paddingTop="1dp">
 
@@ -80,7 +80,7 @@
                 android:focusable="false"
                 android:src="@drawable/icon_green"
                 android:baselineAlignBottom="false"
-                />
+            android:layout_margin="2dp" />
     </LinearLayout>
 
 </FrameLayout>

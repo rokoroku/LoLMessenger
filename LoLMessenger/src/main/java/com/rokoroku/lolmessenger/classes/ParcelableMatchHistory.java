@@ -7,6 +7,7 @@ import android.util.Log;
 import com.achimala.leaguelib.models.LeagueSummoner;
 import com.achimala.leaguelib.models.MatchHistoryEntry;
 import com.achimala.leaguelib.models.MatchHistoryStatType;
+import com.rokoroku.lolmessenger.R;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -16,22 +17,10 @@ import java.util.HashMap;
  */
 public class ParcelableMatchHistory implements Parcelable {
 
-    private static HashMap<Integer, String> _mapString;
-    static {
-        _mapString = new HashMap<Integer, String>();
-        _mapString.put( 0, null); // represents a catch-all champion for stats
-        _mapString.put( 1, "Summoner's Rift");          //Classic
-        _mapString.put( 8, "The Crystal Scar");         //Dominion
-        _mapString.put( 10, "The Twisted Treeline");    //3x3
-        _mapString.put( 12, "The Howling Abyss");       //ARAM
-        _mapString.put( 13, "Magma Chamber");           //2x2
-        _mapString.put( 14, "Proving Grounds");         //Tutorial
-    }
-
     private int    matchID;
     private String matchType;
     private String matchMode;
-    private String matchMap;
+    private int    matchMapID;
     private Date   matchDate;
     private String champion;
     private int    earnedIP;
@@ -49,7 +38,7 @@ public class ParcelableMatchHistory implements Parcelable {
         matchID   = matchHistoryEntry.getGameId();
         matchType = matchHistoryEntry.getQueue().name();
         matchMode = matchHistoryEntry.getGameMode();
-        matchMap  = _mapString.get(matchHistoryEntry.getGameMapID());
+        matchMapID  = matchHistoryEntry.getGameMapID();
         matchDate = matchHistoryEntry.getCreationDate();
         if(matchHistoryEntry.getChampionSelectionForSummoner(summoner).getName() != null) {
             champion  = (matchHistoryEntry.getChampionSelectionForSummoner(summoner).getName());
@@ -63,17 +52,6 @@ public class ParcelableMatchHistory implements Parcelable {
         death  = matchHistoryEntry.getStat(MatchHistoryStatType.NUM_DEATHS);
         assist = matchHistoryEntry.getStat(MatchHistoryStatType.ASSISTS);
         victory= matchHistoryEntry.getStat(MatchHistoryStatType.WIN)>0;
-
-        if(matchType.contains("ARAM")) matchType = "normal game";
-        else if(matchType.contains("NORMAL")) matchType = "normal game";
-        else if(matchType.contains("UNRANKED")) matchType = "normal game";
-        else if(matchType.contains("RANKED")) matchType = "ranked game";
-        else if(matchType.contains("NONE")) matchType = "custom game";
-        else if(matchType.contains("BOT")) matchType = "co-op game";
-
-        if(matchMode.equals("ARAM")) matchMode = "ARAM";
-        else if(matchMode.equals("CLASSIC")) matchMode = "Classic";
-        else if(matchMode.equals("ODIN")) matchMode = "Dominion";
     }
 
     public int getMatchID() {
@@ -100,12 +78,12 @@ public class ParcelableMatchHistory implements Parcelable {
         this.earnedEXP = earnedEXP;
     }
 
-    public String getMatchMap() {
-        return matchMap;
+    public int getMatchMapID() {
+        return matchMapID;
     }
 
-    public void setMatchMap(String matchMap) {
-        this.matchMap = matchMap;
+    public void setMatchMapID(int matchMapID) {
+        this.matchMapID = matchMapID;
     }
 
     public String getMatchType() {
@@ -190,7 +168,7 @@ public class ParcelableMatchHistory implements Parcelable {
         parcel.writeInt(matchID);
         parcel.writeString(matchType);
         parcel.writeString(matchMode);
-        parcel.writeString(matchMap);
+        parcel.writeInt(matchMapID);
         parcel.writeLong(matchDate.getTime());
         parcel.writeString(champion);
         parcel.writeInt(earnedIP);
@@ -208,7 +186,7 @@ public class ParcelableMatchHistory implements Parcelable {
             r.matchID = source.readInt();
             r.matchType = source.readString();
             r.matchMode = source.readString();
-            r.matchMap = source.readString();
+            r.matchMapID = source.readInt();
             r.matchDate = new Date(source.readLong());
             r.champion = source.readString();
             r.earnedIP = source.readInt();

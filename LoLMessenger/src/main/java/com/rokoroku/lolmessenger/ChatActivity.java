@@ -1,5 +1,6 @@
 package com.rokoroku.lolmessenger;
 
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -34,6 +35,9 @@ import com.rokoroku.lolmessenger.utilities.MessageViewAdapter;
 import com.rokoroku.lolmessenger.utilities.SQLiteDbAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Youngrok Kim on 13. 8. 21.
@@ -46,6 +50,7 @@ public class ChatActivity extends FragmentActivity {
     private String mBuddyID;
     private ParcelableRoster mBuddy;
     private ArrayList<ParcelableMessage> MessageLIst;
+    private Map<String,String> mUnknownRosterMap = new HashMap<String, String>();
 
     private EditText mMessageInputView;
     private ListView mMessageListView;
@@ -69,6 +74,15 @@ public class ChatActivity extends FragmentActivity {
                 msg.setData(bundle);
                 msg.replyTo = mClientMessenger;
                 mServiceMessenger.send( msg );
+
+                if(mBuddy == null) {
+                    Message message = Message.obtain(null, LolMessengerService.MSG_REQUEST_SUMMONER_NAME);
+                    bundle = new Bundle();
+                    bundle.putString("id", mBuddyID);
+                    message.setData(bundle);
+                    Log.i(TAG, "request null entry name:" + mBuddyID);
+                    mServiceMessenger.send(message);
+                }
             }
             catch (RemoteException e) {
                 // In this case the service has crashed before we could even
@@ -94,13 +108,26 @@ public class ChatActivity extends FragmentActivity {
             switch ( msg.what ){
                 case LolMessengerService.MSG_REGISTER_CLIENT:
                     Log.i(TAG, "Connected with service");
+                    Bundle bundle = msg.getData();
+                    if(bundle.getString("userAccount") != null ) LolMessengerApplication.setUserAccount(bundle.getString("userAccount"));
+                    if(bundle.getString("userJID") != null)      LolMessengerApplication.setUserJID(bundle.getString("userJID"));
+                    if(bundle.getString("userName") != null )    LolMessengerApplication.setUserName(bundle.getString("userName"));
                     break;
 
-                case LolMessengerService.MSG_RECEIVE_MSG:
+                case LolMessengerService.MSG_CHAT_RECEIVE_MESSAGE:
                     Log.i(TAG, "Get new message from service");
                     //msg.getData().setClassLoader(ParcelableMessage.class.getClassLoader());
                     //ParcelableMessage newMessage = msg.getData().getParcelable("message");
                     refreshMessageList();
+                    break;
+
+                case LolMessengerService.MSG_REQUEST_SUMMONER_NAME:
+                    Log.i(TAG, "Get unknown entry name from service");
+                    mUnknownRosterMap.put( msg.getData().getString("id"), msg.getData().getString("name") );
+                    if(mUnknownRosterMap.containsKey(mBuddyID)) {
+                        TextView textName = (TextView) findViewById(R.id.text_name);
+                        textName.setText(mUnknownRosterMap.get(mBuddyID));
+                    }
                     break;
 
                 case LolMessengerService.MSG_SERVICE_DEAD:
@@ -159,26 +186,62 @@ public class ChatActivity extends FragmentActivity {
         mBuddy = intent.getParcelableExtra("buddy");
 
         //set View
-        textName.setText(mBuddy.getUserName());
         String statusString;
-        if(mBuddy.getAvailablity().equals("available")) {
+        if(mBuddy != null && mBuddy.getAvailablity().equals("available")) {
+            textName.setText(mBuddy.getUserName());
             if(mBuddy.getMode().equals("dnd")) {
                 if(mBuddy.getGameStatus().equals("inGame")) {
-                    statusString = new String("In Game : " + mBuddy.getSkinname() + " (" + ((System.currentTimeMillis() - mBuddy.getTimeStamp())/60000) + "min)");
+
+                    LolMessengerApplication application = (LolMessengerApplication)getApplication();
+                    
+                    String champ = null;
+                    if(application.isShowPlayingChampion()) {
+                        champ = mBuddy.getSkinname();
+                        if(application.getChampStringMap() != null ) try {
+                            String champSubstitute = application.getChampStringMap().get(champ);
+                            if(champSubstitute != null) champ = champSubstitute;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    String inGameString = getString(R.string.status_inGame);
+                    if(application.isShowGameQueuetype()) {
+                        String matchType = mBuddy.getGameQueueType();
+                        if(matchType.contains("ARAM"))          inGameString = getString(R.string.status_inNormalGame);
+                        else if(matchType.contains("NORMAL"))   inGameString = getString(R.string.status_inNormalGame);
+                        else if(matchType.contains("UNRANKED")) inGameString = getString(R.string.status_inNormalGame);
+                        else if(matchType.contains("RANKED"))   inGameString = getString(R.string.status_inRankedGame);
+                        else if(matchType.contains("NONE"))     inGameString = getString(R.string.status_inCustomGame);
+                        else if(matchType.contains("BOT"))      inGameString = getString(R.string.status_inAIGame);
+                    }
+
+                    if(champ != null) {
+                        statusString = inGameString + " : " + champ;
+                    } else {
+                        statusString = inGameString;
+                    }
+
+                    if(application.isShowTimestamp())
+                        statusString += " (" + ((System.currentTimeMillis() - mBuddy.getTimeStamp())/60000) + getString(R.string.status_timestamp_minute) + ")";
+
                 }
                 else if(mBuddy.getGameStatus().equals("teamSelect")) {
-                    statusString = "Selecting Team";
+                    statusString = getString(R.string.status_teamSelect);
                 }
                 else if(mBuddy.getGameStatus().equals("hostingPracticeGame")) {
-                    statusString = "Hosting Practice Game";
+                    statusString = getString(R.string.status_hostingPracticeGame);
                 }
-                else {
-                    statusString = "Finding Game";
+                else if(mBuddy.getGameStatus().equals("spectating")) {
+                    statusString = getString(R.string.status_spectating);
+                } else {
+                    statusString = getString(R.string.status_lookingNewGame);
                 }
                 imageIcon.setImageResource(R.drawable.icon_yellow);
                 textStatus.setTextColor( Color.parseColor("#ffe400") );
+
             } else if(mBuddy.getMode().equals("away")) {
-                statusString = "Away";
+                statusString = getString(R.string.status_away);
                 imageIcon.setImageResource(R.drawable.icon_red);
                 textStatus.setTextColor( Color.RED );
             } else { // if(mBuddy.getMode().equals("chat")) .. 안드로이드 메신저 쓰는사람은 이 값이 없음.
@@ -187,22 +250,78 @@ public class ChatActivity extends FragmentActivity {
                 if(!mBuddy.getStatusMsg().isEmpty()) {
                     statusString = mBuddy.getStatusMsg();
                 } else {
-                    statusString = "Online";
+                    statusString = getString(R.string.status_online);
                 }
                 textStatus.setTextColor( Color.parseColor("#1DB918") );
             }
         } else {
-            statusString = "Offline";
-            textStatus.setTextColor( Color.parseColor("#646464") );
+            if(mBuddy == null) {
+                Log.e(TAG, "unknown entry: " + mBuddyID);
+                textName.setText(getString(R.string.unknown_entry));
+
+                statusString = getString(R.string.unknown_entry_description);
+                mMessageInputView.setEnabled(false);
+                mSendButton.setEnabled(false);
+            } else {
+                textName.setText(mBuddy.getUserName());
+                statusString = getString(R.string.status_offline);
+            }
+            textStatus.setTextColor(Color.parseColor("#646464"));
             imageIcon.setImageResource(R.drawable.icon_black);
         }
         textStatus.setText(statusString);
 
-        Intent connectIntent = new Intent(this, LolMessengerService.class);
-        bindService(connectIntent, mConnection, 0);
+    }
 
-        //if flag is BIND_AUTO_CREATE, service won't be stop until unbinded.
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+        if(!isRunningChatService()) {
+            finish();
+            return;
+        }
+
+        if(mServiceMessenger == null) {
+            Intent connectIntent = new Intent(this, LolMessengerService.class);
+            bindService(connectIntent, mConnection, 0);
+        } else try {
+            Log.i(TAG, "sending registering message to service");
+            Message msg = Message.obtain(null, LolMessengerService.MSG_REGISTER_CLIENT);
+            Bundle bundle = new Bundle();
+            bundle.putString("participantID", (mBuddyID != null) ? mBuddyID : "null_entry" );
+            msg.setData(bundle);
+            msg.replyTo = mClientMessenger;
+            mServiceMessenger.send( msg );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+
+        refreshMessageList();
+
+    }
+
+    @Override
+    protected void onPause() {
+
+        //unregister
+        if(mServiceMessenger != null) {
+            Message msg = Message.obtain(null, LolMessengerService.MSG_UNREGISTER_CLIENT);
+            msg.replyTo = mClientMessenger;
+            Bundle bundle = new Bundle();
+            bundle.putString("participantID", mBuddyID);
+            msg.setData(bundle);
+            try {
+                mServiceMessenger.send(msg);
+                unbindService(mConnection);
+                mServiceMessenger = null;
+            } catch (Exception e) {
+                Log.e(TAG, "service already destroyed");
+                e.printStackTrace();
+            }
+        }
+
+        super.onPause();
     }
 
     /**
@@ -210,35 +329,15 @@ public class ChatActivity extends FragmentActivity {
      */
     private void setupActionBar() {
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        
+
     }
 
     @Override
     protected void onDestroy() {
-        //unregister
-        Message msg = Message.obtain(null, LolMessengerService.MSG_UNREGISTER_CLIENT);
-        msg.replyTo = mClientMessenger;
-        Bundle bundle = new Bundle();
-        bundle.putString("participantID", mBuddyID);
-        msg.setData(bundle);
-        try {
-            mServiceMessenger.send(msg);
-            unbindService(mConnection);
-        } catch (Exception e) {
-            Log.e(TAG, "service already destroyed");
-            e.printStackTrace();
-        }
-
         //close SQLite
         mSQLiteDbAdapter.close();
 
         super.onDestroy();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        refreshMessageList();
     }
 
     @Override
@@ -273,7 +372,7 @@ public class ChatActivity extends FragmentActivity {
 
         ParcelableMessage newMessage = new ParcelableMessage(mUserID, mBuddyID, message, 0);
 
-        Message msg = Message.obtain(null, LolMessengerService.MSG_SEND_MESSAGE);
+        Message msg = Message.obtain(null, LolMessengerService.MSG_CHAT_SEND_MESSAGE);
         Bundle bundle = new Bundle();
         bundle.putParcelable("message", newMessage);
         bundle.setClassLoader(ParcelableMessage.class.getClassLoader());
@@ -306,8 +405,8 @@ public class ChatActivity extends FragmentActivity {
 
     public void deleteChat() {
         ConfirmationDialog dialog = new ConfirmationDialog();
-        dialog.setDialogTitle("Delete Chat");
-        dialog.setDialogContent("Are you sure? \nDeleted message cannot be restored");
+        dialog.setDialogTitle(getString(R.string.dialog_title_delete_chat));
+        dialog.setDialogContent(getString(R.string.dialog_content_delete_chatting_log));
         dialog.setPositiveOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -326,5 +425,22 @@ public class ChatActivity extends FragmentActivity {
 
         // Create and show the dialog.
         dialog.show(ft, "dialog");
+    }
+
+    private boolean isRunningChatService() {
+        ActivityManager manager = (ActivityManager)getSystemService(ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> rsi = manager.getRunningServices(100);
+
+        for(int i=0; i<rsi.size();i++)
+        {
+            ActivityManager.RunningServiceInfo rsInfo = rsi.get(i);
+            if(rsInfo.service.getClassName().equals("com.rokoroku.lolmessenger.LolMessengerService"))
+            {
+                Log.i(TAG, "LolMessengerService is running : " + rsInfo.service.getClassName());
+                return true;
+            }
+        }
+        Log.e(TAG, "LolMessengerService is not running. ");
+        return false;
     }
 }

@@ -2,6 +2,8 @@ package com.rokoroku.lolmessenger.utilities;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.nfc.Tag;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.rokoroku.lolmessenger.ClientActivity;
+import com.rokoroku.lolmessenger.LolMessengerApplication;
 import com.rokoroku.lolmessenger.R;
 import com.rokoroku.lolmessenger.classes.ParcelableRoster;
 
@@ -30,30 +33,58 @@ public class RosterAdapter extends BaseExpandableListAdapter {
     private ArrayList<Object> childItem = new ArrayList<Object>();
     private LayoutInflater mInflater;
     private Activity activity;
+    private LolMessengerApplication application;
 
     public RosterAdapter(Map<String, ParcelableRoster> rosterMap, ArrayList<String> rosterGroup) {
+        setItem(rosterMap, rosterGroup);
+    }
+
+    public void setItem(Map<String, ParcelableRoster> rosterMap, ArrayList<String> rosterGroup) {
         this.mRosterMap = rosterMap;
 
         ArrayList<String> offlineChild = new ArrayList<String>();
         groupItem = rosterGroup;
         childItem.clear();
+
         for(int i=0; i<rosterGroup.size(); i++) {
             childItem.add(new ArrayList<String>());
         }
 
         for(ParcelableRoster entry : mRosterMap.values()) {
             ArrayList<String> tempChild = new ArrayList<String>();
-            for(int i=0; i<rosterGroup.size()-1; i++ ) {
+
+            try {
                 //put into offline group
                 if(entry.getAvailablity().equals("unavailable")) {
                     ((ArrayList<String>)childItem.get(rosterGroup.size()-1)).add( entry.getUserID() );
-                    break;
                 }
-                //put into same group
-                else if(entry.getGroup().equals(rosterGroup.get(i))) {
-                    ((ArrayList<String>)childItem.get(i)).add( entry.getUserID() );
-                    break;
+                //search and put into same group
+                else if(entry.getGroup() != null) {
+                    for(int i=0; i<rosterGroup.size()-1; i++ ) {
+                        if (entry.getGroup().equals(rosterGroup.get(i))) {
+                            ((ArrayList<String>)childItem.get(i)).add( entry.getUserID() );
+                            break;
+                        }
+                    }
                 }
+                //null group
+                else if(entry.getGroup() == null && entry.getAvailablity().equals("available")) {
+                    Log.e("Adapter", "Entry group null: "+ entry + " : " + entry.getUserID() + " / " + entry.getUserName() + " / " + entry.getAvailablity() + " / " + entry.getGroup() );
+                    if(entry.getAvailablity().equals("available")) {
+                        if(rosterGroup.contains("Unknown")) {
+                            ((ArrayList<String>)childItem.get(rosterGroup.indexOf("Unknown"))).add( entry.getUserID() );
+                        }
+                        else {
+                            rosterGroup.add(rosterGroup.size()-1, "Unknown");
+                            childItem.add(childItem.size()-1, new ArrayList<String>());
+                            ((ArrayList<String>)childItem.get(rosterGroup.indexOf("Unknown"))).add( entry.getUserID() );
+                        }
+                    }
+                }
+            } catch (NullPointerException e){
+                // 친구 추가 요청 받을 시 userName, userGroup 등이 null로 처리됨.
+                Log.e("Adapter", "Null entry: "+ entry + " : " + entry.getUserID() + " / " + entry.getUserName() + " / " + entry.getAvailablity() + " / " + entry.getGroup() );
+                e.printStackTrace();
             }
         }
     }
@@ -61,6 +92,7 @@ public class RosterAdapter extends BaseExpandableListAdapter {
     public void setInflater(LayoutInflater mInflater, Activity act) {
         this.mInflater = mInflater;
         activity = act;
+        application = (LolMessengerApplication) activity.getApplication();
     }
 
     @Override
@@ -103,21 +135,54 @@ public class RosterAdapter extends BaseExpandableListAdapter {
             ImageView icon = (ImageView) convertView.findViewById(R.id.statusImageView);
             if(tempEntry.getMode().equals("dnd")) {
                 if(tempEntry.getGameStatus().equals("inGame")) {
-                    statusString = new String("In Game : " + tempEntry.getSkinname() + " (" + ((System.currentTimeMillis() - tempEntry.getTimeStamp())/60000) + "min)");
+
+                    String champ = null;
+                    if(application.isShowPlayingChampion()) {
+                        champ = tempEntry.getSkinname();
+                        if(application.getChampStringMap() != null ) try {
+                            String champSubstitute = application.getChampStringMap().get(champ);
+                            if(champSubstitute != null) champ = champSubstitute;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    String inGameString = activity.getString(R.string.status_inGame);
+                    if(application.isShowGameQueuetype()) {
+                        String matchType = tempEntry.getGameQueueType();
+                        if(matchType.contains("ARAM"))          inGameString = activity.getString(R.string.status_inNormalGame);
+                        else if(matchType.contains("NORMAL"))   inGameString = activity.getString(R.string.status_inNormalGame);
+                        else if(matchType.contains("UNRANKED")) inGameString = activity.getString(R.string.status_inNormalGame);
+                        else if(matchType.contains("RANKED"))   inGameString = activity.getString(R.string.status_inRankedGame);
+                        else if(matchType.contains("NONE"))     inGameString = activity.getString(R.string.status_inCustomGame);
+                        else if(matchType.contains("BOT"))      inGameString = activity.getString(R.string.status_inAIGame);
+                    }
+
+                    if(champ != null) {
+                        statusString = inGameString + " : " + champ;
+                    } else {
+                        statusString = inGameString;
+                    }
+
+                    if(application.isShowTimestamp())
+                        statusString += " (" + ((System.currentTimeMillis() - tempEntry.getTimeStamp())/60000) + activity.getString(R.string.status_timestamp_minute) + ")";
                 }
                 else if(tempEntry.getGameStatus().equals("teamSelect")) {
-                    statusString = "Selecting Team";
+                    statusString = activity.getString(R.string.status_teamSelect);
                 }
                 else if(tempEntry.getGameStatus().equals("hostingPracticeGame")) {
-                    statusString = "Hosting a Practice Game";
+                    statusString = activity.getString(R.string.status_hostingPracticeGame);
+                }
+                else if(tempEntry.getGameStatus().equals("spectating")) {
+                    statusString = activity.getString(R.string.status_spectating);
                 }
                 else {
-                    statusString = "Looking for a Game";
+                    statusString = activity.getString(R.string.status_lookingNewGame);
                 }
                 icon.setImageResource(R.drawable.icon_yellow);
                 statusText.setTextColor( Color.parseColor("#ffe400") );
             } else if(tempEntry.getMode().equals("away")) {
-                statusString = "Away";
+                statusString = activity.getString(R.string.status_away);
                 icon.setImageResource(R.drawable.icon_red);
                 statusText.setTextColor( Color.RED );
             } else { // if(tempEntry.getMode().equals("chat")) .. 안드로이드 메신저 쓰는사람은 이 값이 없음.
@@ -126,7 +191,7 @@ public class RosterAdapter extends BaseExpandableListAdapter {
                 if(tempEntry.getStatusMsg() != null && !tempEntry.getStatusMsg().isEmpty() ) {
                     statusString = tempEntry.getStatusMsg();
                 } else {
-                    statusString = "Online";
+                    statusString = activity.getString(R.string.status_online);
                 }
             }
             statusText.setText(statusString);
@@ -140,10 +205,10 @@ public class RosterAdapter extends BaseExpandableListAdapter {
                 profileIcon.setVisibility(View.VISIBLE);
                 substituteText.setVisibility(View.GONE);
             } catch (Exception e) {
+                Log.e("RosterAdapter", e.getMessage());
                 substituteText.setText(String.valueOf(tempEntry.getProfileIcon()));
                 substituteText.setVisibility(View.VISIBLE);
                 profileIcon.setVisibility(View.GONE);
-                e.printStackTrace();
             }
 
 
@@ -213,7 +278,13 @@ public class RosterAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.row_buddylist_group, null);
         }
-        ((TextView)convertView.findViewById(R.id.textView)).setText((groupItem.get(groupPosition)));
+
+        if(groupItem.get(groupPosition).equals("Offline")) {
+            ((TextView)convertView.findViewById(R.id.textView)).setText(activity.getString(R.string.status_offline));
+        } else {
+            ((TextView)convertView.findViewById(R.id.textView)).setText((groupItem.get(groupPosition)));
+        }
+
         if(isExpanded) {
             ((ImageView)convertView.findViewById(R.id.imageView)).setImageResource(R.drawable.ic_indicator_expanded);
         } else {

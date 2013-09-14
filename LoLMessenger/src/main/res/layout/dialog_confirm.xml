@@ -6,7 +6,6 @@
               android:layout_height="wrap_content"
               android:background="@drawable/dialog_frame"
               android:padding="20dp"
-              android:minWidth="320dp"
               android:baselineAligned="true">
 
         <LinearLayout
@@ -31,16 +30,25 @@
                     android:layout_gravity="center_horizontal"/>
 
             <TextView
-                    android:layout_width="240dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Are you sure to log out?"
+                    android:text="@string/dialog_content_buddy_subscription"
                     android:id="@+id/content"
                     android:textSize="16dp"
                     android:layout_gravity="center_horizontal"
-                    android:textColor="@android:color/white"
-                    android:maxLines="3"
-                    android:minHeight="80dp"
-                    android:gravity="center_vertical|center_horizontal"/>
+                    android:textColor="#eee"
+                    android:maxLines="5"
+                android:gravity="center_vertical|center_horizontal"
+                android:lineSpacingExtra="2dp"
+                android:singleLine="false"
+                android:linksClickable="false"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:autoText="false"
+                android:minWidth="280dp"
+                android:maxWidth="320dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp" />
 
         </LinearLayout>
 
@@ -48,12 +56,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+        android:paddingBottom="4dp">
 
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
-                android:text="Yes"
+                android:text="@android:string/yes"
                 android:id="@+id/buttonOK"
                 android:background="@drawable/btn_lol_style"
                 android:layout_weight="1"
@@ -64,7 +73,7 @@
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
-                android:text="No"
+                android:text="@android:string/no"
                 android:id="@+id/buttonCancle"
                 android:background="@drawable/btn_lol_style"
                 android:layout_weight="1"

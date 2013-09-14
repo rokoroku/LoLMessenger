@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.rokoroku.lolmessenger.ClientActivity;
+import com.rokoroku.lolmessenger.LolMessengerApplication;
 import com.rokoroku.lolmessenger.R;
 import com.rokoroku.lolmessenger.classes.ChatInformation;
 import com.rokoroku.lolmessenger.utilities.ChatlistViewAdapter;
@@ -25,6 +27,8 @@ public class ChatListFragment extends Fragment {
     private ArrayList<ChatInformation> mChatList = new ArrayList<ChatInformation>();
 
     private ListView mChatListView = null;
+    private ChatlistViewAdapter mAdapter = null;
+
     private boolean isReady=false;
 
 
@@ -65,7 +69,7 @@ public class ChatListFragment extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if (isVisibleToUser) {
             // 보인다.
-            if(isReady) refreshChatList();
+            // if(isReady) refreshChatList();
         } else {
             // 안보인다.
         }
@@ -79,9 +83,20 @@ public class ChatListFragment extends Fragment {
         //열린 대화 개수
         mChatList = mActivity.getSQLiteDbAdapter().getChatList(mUserID);
 
-        ChatlistViewAdapter adapter = new ChatlistViewAdapter( mChatList,  mActivity.getRosterMap() );
-        adapter.setInflater((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE), getActivity());
-        mChatListView.setAdapter( adapter );
-        //mChatListView.setOnItemClickListener(null);
+        if(mChatList != null) {
+
+            if(mChatListView.getAdapter() == null) {
+                mAdapter = new ChatlistViewAdapter( mChatList,  mActivity.getRosterMap() );
+                mAdapter.setInflater((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE), getActivity());
+                mChatListView.setAdapter(mAdapter);
+            } else {
+                mAdapter.setItem(mChatList, mActivity.getRosterMap());
+                mAdapter.notifyDataSetChanged();
+            }
+
+        } else {
+            Toast.makeText(mActivity.getApplicationContext(), mActivity.getString(R.string.error_failure_retrieving_chatting_list), Toast.LENGTH_SHORT).show();
+            mActivity.doLogout(true);
+        }
     }
 }

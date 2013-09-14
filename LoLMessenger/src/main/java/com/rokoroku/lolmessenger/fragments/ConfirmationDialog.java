@@ -27,6 +27,9 @@ public class ConfirmationDialog extends DialogFragment {
     String title = null;
     String content = null;
 
+    String buttonOKString = null;
+    String buttonCancelString = null;
+
     View.OnClickListener onClickListenerOK  = null;
     View.OnClickListener onClickListenerCancel = new View.OnClickListener() {
         @Override
@@ -42,7 +45,7 @@ public class ConfirmationDialog extends DialogFragment {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.setCanceledOnTouchOutside(true);
+        dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(true);
 
         return dialog;
@@ -67,6 +70,8 @@ public class ConfirmationDialog extends DialogFragment {
         if(content != null)                 viewContent.setText(content);
         if(onClickListenerOK    != null)    buttonOK.setOnClickListener(onClickListenerOK);
         if(onClickListenerCancel!= null)    buttonCancel.setOnClickListener(onClickListenerCancel);
+        if(buttonOKString != null)          buttonOK.setText(buttonOKString);
+        if(buttonCancelString != null)      buttonCancel.setText(buttonCancelString);
 
     }
 
@@ -78,11 +83,32 @@ public class ConfirmationDialog extends DialogFragment {
         this.content = content;
     }
 
-    public void setPositiveOnClickListener (View.OnClickListener onClickListener) {
-        this.onClickListenerOK = onClickListener;
+    public void setPositiveOnClickListener (final View.OnClickListener onClickListener) {
+        this.onClickListenerOK = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickListener.onClick(view);
+                dismiss();
+            }
+        };
     }
 
-    public void setNegativeOnClickListener (View.OnClickListener onClickListener) {
-        this.onClickListenerCancel = onClickListener;
+    public void setNegativeOnClickListener (final View.OnClickListener onClickListener) {
+        this.onClickListenerCancel = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickListener.onClick(view);
+                dismiss();
+            }
+        };
     }
+
+    public void setPositiveButtonText (String string) {
+        buttonOKString = string;
+    }
+
+    public void setNegativeButtonText (String string) {
+        buttonCancelString = string;
+    }
+
 }

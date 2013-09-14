@@ -22,8 +22,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
+                android:gravity="center_horizontal"
                 android:text="@string/login_progress_signing_in" />
     </LinearLayout>
+
+    <!-- Login form -->
 
     <LinearLayout
             android:id="@+id/login_form"
@@ -31,99 +34,142 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <Space
-                android:layout_width="20px"
-                android:layout_height="20px"
-                android:layout_weight="1"/>
-
         <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical|center_horizontal"
-                    android:background="@drawable/dialog_frame"
-                    android:padding="20dp"
-                    android:layout_margin="12dp"
-                >
-
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="PVP.net Login"
-                    android:id="@+id/textView"
-                    android:gravity="center_vertical|center_horizontal"
-                    android:textSize="22dp"
-                    android:textStyle="bold"
-                    android:textColor="#fff"/>
-
-            <EditText
-                        android:layout_width="fill_parent"
-                        android:layout_height="46dp"
-                        android:id="@+id/edit_ID"
-                        android:inputType="text"
-                        android:hint="@string/hint_id"
-                        android:singleLine="true"
-                        android:background="@drawable/white_text_input"
-                        android:textColor="@android:color/black"
-                        android:paddingLeft="8dp"
-                        android:paddingRight="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"/>
-
-                <EditText
-                        android:layout_width="fill_parent"
-                        android:layout_height="46dp"
-                        android:inputType="textPassword"
-                        android:ems="10"
-                        android:id="@+id/edit_Password"
-                        android:hint="@string/hint_password"
-                        android:password="true"
-                        android:singleLine="true"
-                        android:background="@drawable/white_text_input"
-                        android:textColor="@android:color/black"
-                        android:paddingLeft="8dp"
-                        android:paddingRight="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"/>
-
-            <Spinner
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/spinner"
-                    android:spinnerMode="dialog"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:gravity="center"/>
-
-            <CheckBox
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/remember_account"
-                        android:id="@+id/checkBox"
-                        android:checked="false"/>
-
-            <Button
-                        android:layout_width="120dp"
-                        android:layout_height="48dp"
-                        android:text="@string/sign_in"
-                        android:id="@+id/sign_in_button"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_margin="4dp"
-                        android:onClick="attemptLogin"
-                        android:background="@drawable/btn_lol_style"/>
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_vertical|center_horizontal">
 
         </LinearLayout>
 
-        <Space
-                android:layout_width="20px"
-                android:layout_height="20px"
-                android:layout_weight="1"/>
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center_vertical|center_horizontal"
+                android:background="@drawable/dialog_frame"
+                android:layout_margin="12dp"
+                android:ems="20"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="PVP.net Login"
+                    android:id="@+id/textView"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:textColor="#fff"
+                    android:layout_marginBottom="4dp"
+                    />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:id="@+id/edit_ID"
+                    android:hint="@string/hint_id"
+                    android:singleLine="true"
+                    android:background="@drawable/white_text_input"
+                    android:textColor="@android:color/black"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:layout_margin="4dp"
+                    android:ems="20"
+                    android:inputType="text" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:id="@+id/edit_password"
+                    android:hint="@string/hint_password"
+                    android:singleLine="true"
+                    android:background="@drawable/white_text_input"
+                    android:textColor="@android:color/black"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:layout_margin="4dp"
+                    android:maxWidth="500dp"
+                    android:ems="20"
+                    android:inputType="textPassword" />
+
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:id="@+id/spinner"
+                    android:spinnerMode="dialog"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginRight="6dp"
+                    android:gravity="center"/>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="8">
+
+                        <CheckBox
+                            android:layout_width="fill_parent"
+                            android:layout_height="30dp"
+                            android:text="@string/remember_account"
+                            android:id="@+id/checkBox"
+                            android:checked="false"/>
+
+                        <CheckBox
+                            android:layout_width="fill_parent"
+                            android:layout_height="30dp"
+                            android:text="@string/login_automatically"
+                            android:id="@+id/checkBox2"
+                            android:checked="false"
+                            android:enabled="false" />
+                    </LinearLayout>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="52dp"
+                        android:text="@string/sign_in"
+                        android:id="@+id/sign_in_button"
+                        android:layout_gravity="center"
+                        android:onClick="attemptLogin"
+                        android:background="@drawable/btn_lol_style"
+                        android:layout_marginRight="4dp"
+                        android:minWidth="100dp"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1"></LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/adFrame"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+        </LinearLayout>
 
     </LinearLayout>
-
 </merge>

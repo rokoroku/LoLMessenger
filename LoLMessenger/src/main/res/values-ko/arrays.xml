@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="client_spinner">
+        <item>@string/client_spinner_item_01</item>
+        <item>@string/client_spinner_item_02</item>
+        <item>@string/client_spinner_item_03</item>
+        <item>@string/client_spinner_item_04</item>
+        <item>@string/client_spinner_item_05</item>
+    </string-array>
+
+    <string-array name="map_strings">
+        <item>1</item> <item>소환사의 협곡</item>
+        <item>8</item> <item>수정의 상처</item>
+        <item>10</item><item>뒤틀린 숲</item>
+        <item>12</item><item>칼바람 나락</item>
+        <item>13</item><item>용암 회랑</item>
+        <item>14</item><item>증명의 전장</item>
+    </string-array>
+
+    <string-array name="champ_strings">
+        <item>"Annie"</item><item>애니</item>
+        <item>"Olaf"</item><item>올라프</item>
+        <item>"Galio"</item><item>갈리오</item>
+        <item>"TwistedFate"</item><item>트위스티드 페이트</item>
+        <item>"XinZhao"</item><item>신 짜오</item>
+        <item>"Urgot"</item><item>우르곳</item>
+        <item>"Leblanc"</item><item>르블랑</item>
+        <item>"Vladimir"</item><item>블라디미르</item>
+        <item>"FiddleSticks"</item><item>피들스틱</item>
+        <item>"Kayle"</item><item>케일</item>
+        <item>"MasterYi"</item><item>마스터 이</item>
+        <item>"Alistar"</item><item>알리스타</item>
+        <item>"Ryze"</item><item>라이즈</item>
+        <item>"Sion"</item><item>사이온</item>
+        <item>"Sivir"</item><item>시비르</item>
+        <item>"Soraka"</item><item>소라카</item>
+        <item>"Teemo"</item><item>티모</item>
+        <item>"Tristana"</item><item>트리스타나</item>
+        <item>"Warwick"</item><item>워윅</item>
+        <item>"Nunu"</item><item>누누</item>
+        <item>"MissFortune"</item><item>미스 포츈</item>
+        <item>"Ashe"</item><item>애쉬</item>
+        <item>"Tryndamere"</item><item>트린다미어</item>
+        <item>"Jax"</item><item>잭스</item>
+        <item>"Morgana"</item><item>모르가나</item>
+        <item>"Zilean"</item><item>질리언</item>
+        <item>"Singed"</item><item>신지드</item>
+        <item>"Evelynn"</item><item>이블린</item>
+        <item>"Twitch"</item><item>트위치</item>
+        <item>"Karthus"</item><item>카서스</item>
+        <item>"Chogath"</item><item>초가스</item>
+        <item>"Amumu"</item><item>아무무</item>
+        <item>"Rammus"</item><item>람머스</item>
+        <item>"Anivia"</item><item>애니비아</item>
+        <item>"Shaco"</item><item>샤코</item>
+        <item>"DrMundo"</item><item>문도 박사</item>
+        <item>"Sona"</item><item>소나</item>
+        <item>"Kassadin"</item><item>카사딘</item>
+        <item>"Irelia"</item><item>이렐리아</item>
+        <item>"Janna"</item><item>잔나</item>
+        <item>"Gangplank"</item><item>갱플랭크</item>
+        <item>"Corki"</item><item>코르키</item>
+        <item>"Karma"</item><item>카르마</item>
+        <item>"Taric"</item><item>타릭</item>
+        <item>"Veigar"</item><item>베이가</item>
+        <item>"Trundle"</item><item>트런들</item>
+        <item>"Swain"</item><item>스웨인</item>
+        <item>"Caitlyn"</item><item>케이틀린</item>
+        <item>"Blitzcrank"</item><item>블리츠크랭크</item>
+        <item>"Malphite"</item><item>말파이트</item>
+        <item>"Katarina"</item><item>카타리나</item>
+        <item>"Nocturne"</item><item>녹턴</item>
+        <item>"Maokai"</item><item>마오카이</item>
+        <item>"Renekton"</item><item>레넥톤</item>
+        <item>"JarvanIV"</item><item>자르반 4세</item>
+        <item>"Orianna"</item><item>오리아나</item>
+        <item>"Wukong"</item><item>오공</item>
+        <item>"Brand"</item><item>브랜드</item>
+        <item>"LeeSin"</item><item>리 신</item>
+        <item>"Vayne"</item><item>베인</item>
+        <item>"Rumble"</item><item>럼블</item>
+        <item>"Cassiopeia"</item><item>카시오페아</item>
+        <item>"Skarner"</item><item>스카너</item>
+        <item>"Heimerdinger"</item><item>하이머딩거</item>
+        <item>"Nasus"</item><item>나서스</item>
+        <item>"Nidalee"</item><item>니달리</item>
+        <item>"Udyr"</item><item>우디르</item>
+        <item>"Poppy"</item><item>뽀삐</item>
+        <item>"Gragas"</item><item>그라가스</item>
+        <item>"Pantheon"</item><item>판테온</item>
+        <item>"Ezreal"</item><item>이즈리얼</item>
+        <item>"Mordekaiser"</item><item>모데카이저</item>
+        <item>"Yorick"</item><item>요릭</item>
+        <item>"Akali"</item><item>아칼리</item>
+        <item>"Kennen"</item><item>케넨</item>
+        <item>"Garen"</item><item>가렌</item>
+        <item>"Leona"</item><item>레오나</item>
+        <item>"Malzahar"</item><item>말자하</item>
+        <item>"Talon"</item><item>탈론</item>
+        <item>"Riven"</item><item>리븐</item>
+        <item>"KogMaw"</item><item>코그모</item>
+        <item>"Shen"</item><item>쉔</item>
+        <item>"Lux"</item><item>럭스</item>
+        <item>"Xerath"</item><item>제라스</item>
+        <item>"Shyvana"</item><item>쉬바나</item>
+        <item>"Ahri"</item><item>아리</item>
+        <item>"Graves"</item><item>그레이브즈</item>
+        <item>"Fizz"</item><item>피즈</item>
+        <item>"Volibear"</item><item>볼리베어</item>
+        <item>"Varus"</item><item>바루스</item>
+        <item>"Nautilus"</item><item>노틸러스</item>
+        <item>"Viktor"</item><item>빅토르</item>
+        <item>"Sejuani"</item><item>세주아니</item>
+        <item>"Fiora"</item><item>피오라</item>
+        <item>"Ziggs"</item><item>직스</item>
+        <item>"Lulu"</item><item>룰루</item>
+        <item>"Draven"</item><item>드레이븐</item>
+        <item>"Hecarim"</item><item>헤카림</item>
+        <item>"Darius"</item><item>다리우스</item>
+        <item>"Jayce"</item><item>제이스</item>
+        <item>"Zyra"</item><item>자이라</item>
+        <item>"Diana"</item><item>다이아나</item>
+        <item>"Rengar"</item><item>렝가</item>
+        <item>"Syndra"</item><item>신드라</item>
+        <item>"KhaZix"</item><item>카직스</item>
+        <item>"Elise"</item><item>엘리스</item>
+        <item>"Zed"</item><item>제드</item>
+        <item>"Nami"</item><item>나미</item>
+        <item>"Vi"</item><item>바이</item>
+        <item>"Thresh"</item><item>쓰레쉬</item>
+        <item>"Quinn"</item><item>퀸</item>
+        <item>"Zac"</item><item>자크</item>
+        <item>"Lissandra"</item><item>리산드라</item>
+        <item>"Aatrox"</item><item>아트록스</item>
+        <item>"Lucian"</item><item>루시안</item>
+        <item>"Random"</item><item>무작위</item>
+    </string-array>
+
+</resources>

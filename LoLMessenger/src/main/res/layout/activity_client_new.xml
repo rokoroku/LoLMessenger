@@ -1,157 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
 
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/frame"
-            android:baselineAligned="false">
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
 
         <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/frame"
+                android:baselineAligned="false"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="0dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="0dp"
+                android:layout_alignParentStart="true">
 
-            <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:id="@+id/statusIcon"
-                    android:focusable="false"
-                    android:src="@drawable/icon_green"
-                    android:baselineAlignBottom="false"
-                    android:layout_gravity="top"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="1dp"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginTop="4dp"/>
+            <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
 
-            <Spinner
+                <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:id="@+id/statusIcon"
+                        android:focusable="false"
+                        android:src="@drawable/icon_green"
+                        android:baselineAlignBottom="false"
+                        android:layout_gravity="top"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="1dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginTop="4dp"/>
+
+                <Spinner
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:spinnerMode="dropdown"
+                        android:id="@+id/spinner"
+                        android:gravity="left"
+                        android:minWidth="160dp"
+                        android:layout_gravity="bottom"
+                        />
+
+            </LinearLayout>
+
+            <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:spinnerMode="dropdown"
-                    android:id="@+id/spinner"
-                    android:gravity="left"
-                    android:minWidth="140dp"
+                    android:gravity="right"
                     android:layout_gravity="bottom"
-                    />
+                    android:layout_marginLeft="20dp">
+
+                <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="44dp"
+                        android:id="@+id/tab_indi1"
+                        android:background="@drawable/tab_underbar"
+                        android:minWidth="50dp">
+
+                    <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true">
+
+                        <ImageView
+                                android:layout_width="36dp"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_buddy_focused"
+                                android:cropToPadding="false"
+                                android:layout_gravity="center"
+                                android:visibility="visible"/>
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/text_buddycount"
+                                android:textColor="#fff"
+                                android:layout_gravity="center"
+                                android:gravity="center_horizontal"
+                                android:autoText="false"
+                                android:textSize="12dp"
+                                android:text="0"/>
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="44dp"
+                        android:id="@+id/tab_indi2"
+                        android:alpha="0.3"
+                        android:minWidth="50dp">
+
+                    <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true">
+
+                        <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:src="@drawable/ic_chat_focused"
+                                android:cropToPadding="false"
+                                android:layout_gravity="center"
+                                android:scaleType="fitXY"/>
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:id="@+id/text_chatcount"
+                                android:textColor="#fff"
+                                android:layout_gravity="center"
+                                android:gravity="center_horizontal"/>
+
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="44dp"
+                        android:id="@+id/tab_indi3"
+                        android:alpha="0.3"
+                        android:minWidth="50dp">
+
+                    <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true">
+
+                        <ImageView
+                                android:layout_width="38dp"
+                                android:layout_height="28dp"
+                                android:src="@drawable/ic_infomation"
+                                android:cropToPadding="false"
+                                android:layout_gravity="center"
+                                android:scaleType="fitXY"
+                                android:padding="2dp"/>
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 
-        <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:layout_gravity="bottom"
-                android:layout_marginLeft="20dp">
-
-            <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:id="@+id/tab_indi1"
-                    android:background="@drawable/tab_underbar"
-                    android:minWidth="50dp">
-
-                <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true">
-
-                    <ImageView
-                            android:layout_width="36dp"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/ic_buddy_focused"
-                            android:cropToPadding="false"
-                            android:layout_gravity="center"
-                            android:visibility="visible"/>
-
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/text_buddycount"
-                            android:textColor="#fff"
-                            android:layout_gravity="center"
-                            android:gravity="center_horizontal"
-                            android:autoText="false"
-                            android:textSize="12dp"
-                            android:text="0"/>
-
-                </LinearLayout>
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:id="@+id/tab_indi2"
-                    android:alpha="0.3"
-                    android:minWidth="50dp">
-
-                <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true">
-
-                    <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:src="@drawable/ic_chat_focused"
-                            android:cropToPadding="false"
-                            android:layout_gravity="center"
-                            android:scaleType="fitXY"/>
-
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:id="@+id/text_chatcount"
-                            android:textColor="#fff"
-                            android:layout_gravity="center"
-                            android:gravity="center_horizontal"/>
-
-                </LinearLayout>
-            </RelativeLayout>
-
-            <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:id="@+id/tab_indi3"
-                    android:alpha="0.3"
-                    android:minWidth="50dp">
-
-                <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true">
-
-                    <ImageView
-                            android:layout_width="38dp"
-                            android:layout_height="26dp"
-                            android:src="@drawable/ic_infomation_2"
-                            android:cropToPadding="false"
-                            android:layout_gravity="center"
-                            android:scaleType="fitXY"
-                            android:padding="2dp"/>
-
-                </LinearLayout>
-
-            </RelativeLayout>
-
-        </LinearLayout>
-
+        <android.support.v4.view.ViewPager
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="4dp"
+            android:layout_weight="1"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:paddingBottom="54dp"/>
     </LinearLayout>
 
-    <android.support.v4.view.ViewPager
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/pager"
+    <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="4dp"
-            android:background="@drawable/background"/>
+            android:layout_height="50dp"
+            android:id="@+id/adFrame"
+            android:gravity="center_horizontal"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentStart="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentBottom="true">
+    </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

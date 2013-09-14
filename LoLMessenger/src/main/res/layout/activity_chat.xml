@@ -13,8 +13,7 @@
             android:id="@+id/imageView"
             android:layout_marginTop="48dp"
             android:layout_marginBottom="48dp"
-            android:src="@drawable/background"
-            android:layout_alignParentStart="true"
+        android:layout_alignParentStart="true"
             android:scaleType="fitXY"/>
 
     <LinearLayout
@@ -130,8 +129,7 @@
               android:id="@+id/message_list"
               android:layout_weight="1"
               android:divider="@android:color/transparent"
-              android:paddingTop="4dp"
-              android:dividerHeight="4dp"
+        android:dividerHeight="0dp"
               android:visibility="visible"
               android:fastScrollAlwaysVisible="false"
               android:fastScrollEnabled="false"
@@ -156,8 +154,8 @@
                   android:layout_marginTop="4dp"
                   android:layout_marginBottom="4dp"
                 />
-        <Button android:layout_width="wrap_content"
-                android:layout_height="40dp" android:text="send"
+        <Button android:layout_width="68dp"
+                android:layout_height="40dp" android:text="@string/action_send"
                 android:id="@+id/button_send"
                 android:background="@drawable/btn_lol_style"
                 android:layout_margin="4dp"/>

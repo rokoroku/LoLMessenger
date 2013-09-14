@@ -19,7 +19,7 @@ import com.rokoroku.lolmessenger.ClientActivity;
 import com.rokoroku.lolmessenger.R;
 import com.rokoroku.lolmessenger.classes.ParcelableMatchHistory;
 import com.rokoroku.lolmessenger.classes.ParcelableRoster;
-import com.rokoroku.lolmessenger.utilities.MatchlistViewAdapter;
+import com.rokoroku.lolmessenger.utilities.MatchHistoryViewAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,6 +43,7 @@ public class SummonerInformationDialogFragment extends DialogFragment {
     private TextView mSummonerNameTextView;
     private TextView mSummonerLevelTextView;
     private ImageView mSummonerIcon;
+    private TextView mSummonerIconSubstituteText;
     private View mFWOTDview;
     private TextView mFWOTDtimeTextView;
     private ImageView mFWOTDtimeIcon;
@@ -55,6 +56,7 @@ public class SummonerInformationDialogFragment extends DialogFragment {
     private boolean isReady = false;
 
     private Timer mTimer = null;
+    private Handler mHandler = new Handler();
 
     public SummonerInformationDialogFragment() {
     }
@@ -81,9 +83,11 @@ public class SummonerInformationDialogFragment extends DialogFragment {
         // creating the fullscreen dialog
         final Dialog dialog = new Dialog(getActivity());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        dialog.setCancelable(true);
+        //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_frame);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(true);
 
         return dialog;
     }
@@ -104,6 +108,9 @@ public class SummonerInformationDialogFragment extends DialogFragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if (isVisibleToUser) {
             if(mLoadingView.getVisibility() == View.VISIBLE) refreshSummoner();
+            if(mTimer != null) { mTimer = new Timer(); mTimer.schedule(new FWOTD_TimerTask(), 500, 1000); }
+        } else {
+            if(mTimer != null) mTimer.cancel();
         }
         super.setUserVisibleHint(isVisibleToUser);
     }
@@ -122,6 +129,7 @@ public class SummonerInformationDialogFragment extends DialogFragment {
         mSummonerNameTextView = (TextView) view.findViewById(R.id.summonerName);
         mSummonerLevelTextView = (TextView) view.findViewById(R.id.summonerLevel);
         mSummonerIcon = (ImageView) view.findViewById(R.id.summonerIcon);
+        mSummonerIconSubstituteText = (TextView) view.findViewById(R.id.summonerIconSubstituteText);
         mFWOTDtimeTextView = (TextView) view.findViewById(R.id.FWOTDtime);
         mFWOTDtimeIcon = (ImageView) view.findViewById(R.id.FWOTDicon);
         mFWOTDview = view.findViewById(R.id.FWOTDview);
@@ -149,12 +157,17 @@ public class SummonerInformationDialogFragment extends DialogFragment {
         if(isReady) {
             if(mRoster != null && mMatchHistory != null) {
                 mSummonerNameTextView.setText(mRoster.getUserName());
-                mSummonerLevelTextView.setText("Level " + mRoster.getSummonerLevel());
+                mSummonerLevelTextView.setText(getString(R.string.status_level) + " " + mRoster.getSummonerLevel());
                 int iconID = 0;
                 try {
                     iconID = R.drawable.class.getField("profile_icon_" + mRoster.getProfileIcon() ).getInt(null);
                     mSummonerIcon.setImageResource(iconID);
+                    mSummonerIcon.setVisibility(View.VISIBLE);
+                    mSummonerIconSubstituteText.setVisibility(View.GONE);
                 } catch (Exception e) {
+                    mSummonerIcon.setVisibility(View.GONE);
+                    mSummonerIconSubstituteText.setText(String.valueOf(mRoster.getProfileIcon()));
+                    mSummonerIconSubstituteText.setVisibility(View.VISIBLE);
                     e.printStackTrace();
                 }
                 //mFWOTDtimeTextView = (TextView) mActivity.findViewById(R.id.FWOTDtime);
@@ -163,7 +176,7 @@ public class SummonerInformationDialogFragment extends DialogFragment {
                 if(!mRoster.getRankedLeagueTier().equals("UNRANKED")) {
                     mTierTextView.setText(mRoster.getRankedLeagueTier() + " " + mRoster.getRankedLeagueDivision());
                     mTierGroupTextView.setText(mRoster.getRankedLeagueName());
-                    mTierStatTextView.setText(mRoster.getLeaguePoints() + " LP");
+                    mTierStatTextView.setText(mRoster.getLeaguePoints() + " " + mActivity.getString(R.string.status_league_point));
                     if(mRoster.getRankedLeagueTier().equals("CHALLENGER")) iconID = R.drawable.medals_challenger;
                     else if(mRoster.getRankedLeagueTier().equals("DIAMOND")) iconID = R.drawable.medals_diamond;
                     else if(mRoster.getRankedLeagueTier().equals("PLATINUM")) iconID = R.drawable.medals_platinum;
@@ -178,7 +191,7 @@ public class SummonerInformationDialogFragment extends DialogFragment {
                 }
                 mTierIcon.setImageResource(iconID);
                 //mMatchList = (ListView) mActivity.findViewById(R.id.listView);
-                MatchlistViewAdapter adapter = new MatchlistViewAdapter( mMatchHistory );
+                MatchHistoryViewAdapter adapter = new MatchHistoryViewAdapter( mMatchHistory );
                 adapter.setInflater((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE), getActivity());
                 mMatchList.setAdapter( adapter );
                 mLoadingView.setVisibility(View.GONE);
@@ -200,9 +213,8 @@ public class SummonerInformationDialogFragment extends DialogFragment {
     public void setFWOTD(Date FWOTD) {
         this.mFWOTD = FWOTD;
         if(FWOTD.getTime() != 0) {
-            FWOTD_TimerTask timerTask = new FWOTD_TimerTask();
             mTimer = new Timer();
-            mTimer.schedule(timerTask, 500, 1000);
+            mTimer.schedule(new FWOTD_TimerTask(), 500, 1000);
         } else {
             mFWOTDview.setVisibility(View.INVISIBLE);
         }
@@ -225,38 +237,38 @@ public class SummonerInformationDialogFragment extends DialogFragment {
     }
 
     class FWOTD_TimerTask extends TimerTask {
+
         public void run() {
-            mHandler.post(mUpdateTimeTask);
-        }
-    }
-    private Handler mHandler = new Handler();
+            // Android에서는 MainThread이외에서는 UI Object를 제어 할 수 없기 때문에,
+            // Handler를 통해서 MainThread에 Task를 넘겨 주어야 한다...고 한다.
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Date current = new Date();
 
-    private Runnable mUpdateTimeTask = new Runnable() {
-        public void run() {
-            Date current = new Date();
+                    long diffInSeconds = (mFWOTD.getTime() - current.getTime()) / 1000;
 
-            long diffInSeconds = (mFWOTD.getTime() - current.getTime()) / 1000;
-
-            if(diffInSeconds>0) {
-                long diff[] = new long[] { 0, 0, 0, 0 };
+                    if(diffInSeconds>0) {
+                        long diff[] = new long[] { 0, 0, 0, 0 };
                 /* sec */  diff[3] = (diffInSeconds >= 60 ? diffInSeconds % 60 : diffInSeconds);
                 /* min */  diff[2] = (diffInSeconds = (diffInSeconds / 60)) >= 60 ? diffInSeconds % 60 : diffInSeconds;
                 /* hours */diff[1] = (diffInSeconds = (diffInSeconds / 60)) >= 24 ? diffInSeconds % 24 : diffInSeconds;
                 /* days */ diff[0] = (diffInSeconds = (diffInSeconds / 24));
 
-                String dateString = String.format("%d:%02d:%02d",
-                        (int)diff[1],
-                        (int)diff[2],
-                        (int)diff[3]) ;
+                        String dateString = String.format("%d:%02d:%02d",
+                                (int)diff[1],
+                                (int)diff[2],
+                                (int)diff[3]) ;
 
-                mFWOTDtimeTextView.setText(dateString);
-            }
-            else {
-                mTimer.cancel();
-                mFWOTDtimeIcon.setImageResource(R.drawable.icon_bonus_on);
-                mFWOTDtimeTextView.setText("Available");
-            }
+                        mFWOTDtimeTextView.setText(dateString);
+                    }
+                    else {
+                        mTimer.cancel();
+                        mFWOTDtimeIcon.setImageResource(R.drawable.icon_bonus_on);
+                        mFWOTDtimeTextView.setText(mActivity.getString(R.string.status_first_win_bonus_available));
+                    }
+                }
+            });
         }
-    };
-
+    }
 }

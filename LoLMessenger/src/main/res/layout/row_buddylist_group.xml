@@ -20,6 +20,7 @@
                      android:textSize="18dp"
                      android:enabled="true"
                      android:layout_gravity="center"
-                     android:layout_weight="8" />
+                     android:layout_weight="8"
+                     android:paddingBottom="2dp"/>
 
 </LinearLayout>

@@ -6,7 +6,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -21,17 +24,23 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
 import com.rokoroku.lolmessenger.classes.ParcelableMatchHistory;
 import com.rokoroku.lolmessenger.classes.ParcelableRoster;
 import com.rokoroku.lolmessenger.fragments.BuddyListFragment;
@@ -43,6 +52,7 @@ import com.rokoroku.lolmessenger.fragments.SummonerInformationDialogFragment;
 import com.rokoroku.lolmessenger.utilities.SQLiteDbAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -51,8 +61,13 @@ import java.util.Map;
 public class ClientActivity extends FragmentActivity {
 
     protected static final String TAG = "com.rokoroku.lolmessenger.ClientActivity";
-    private Boolean isReady = false;
-    private Boolean isRestart = false;
+    private Boolean isReady = false;        // flag that UI Contents are ready
+    private Boolean isRestart = false;      // flag for restarting from login activity
+    private Boolean isExiting = false;      // flag for exiting the application
+
+    private Boolean isSummonerUpdated = false;
+    private Boolean isRosterUpdated = false;
+    private Boolean isChatUpdated = false;
 
     //UI References
     private ViewPager mPager;
@@ -74,11 +89,17 @@ public class ClientActivity extends FragmentActivity {
     private SummonerDialog mSummonerDialog = null;
 
     // Roster
-    private Map<String, ParcelableRoster> mRosterMap = null;
-    private ArrayList<String> mRosterGroupList = null;
     private String mUserID = null;
     private String mUserAccount = null;
     private ParcelableRoster mUserPresence = null;
+    private Map<String, ParcelableRoster> mRosterMap = null;
+    private ArrayList<String> mRosterGroupList = null;
+    private Map<String, String> mUnknownRosterMap = new HashMap<String, String>();
+
+    // Roster Subscription variable
+    private ArrayList<Bundle> mSubscriptionRequest = new ArrayList<Bundle>();
+
+    // temporary information for user summoner information
     private ParcelableRoster mUserPresence2 = null;
     private ArrayList<ParcelableMatchHistory>  mMatchHistory = null;
     private Date mFWOTD = null;
@@ -88,7 +109,7 @@ public class ClientActivity extends FragmentActivity {
 
     // Chat Connection Object
     private Messenger mServiceMessenger = null;
-    private Messenger mClientMessenger = new Messenger( new IncomingHandler() );
+    private Messenger mClientMessenger = new Messenger( new ClientHandler() );
 
     /**Class for interacting with the main interface of the service. */
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -116,18 +137,29 @@ public class ClientActivity extends FragmentActivity {
         }
     };
 
-    class IncomingHandler extends Handler {
+    public class ClientHandler extends Handler {
         @Override
         public void handleMessage( Message msg ){
             Bundle bundle = null;
             switch ( msg.what ){
                 case LolMessengerService.MSG_REGISTER_CLIENT:
                     Log.i(TAG, "Connected with service");
+                    isReady = true;
+
+                    //set static user information
+                    bundle = msg.getData();
+                    if(bundle.getString("userAccount") != null ) LolMessengerApplication.setUserAccount(bundle.getString("userAccount"));
+                    if(bundle.getString("userJID") != null)      LolMessengerApplication.setUserJID(bundle.getString("userJID"));
+                    if(bundle.getString("userName") != null )    LolMessengerApplication.setUserName(bundle.getString("userName"));
+
                     refreshRoster();
                     break;
 
                 case LolMessengerService.MSG_REQUEST_ROSTER:
                     Log.i(TAG, "Get Roster Entries from service");
+                    isRosterUpdated = true;
+                    isChatUpdated = true; //since roster's status must be updated together
+
                     bundle = msg.getData();
                     bundle.setClassLoader(ParcelableRoster.class.getClassLoader());
                     mRosterMap = new HashMap<String, ParcelableRoster>();
@@ -141,8 +173,7 @@ public class ClientActivity extends FragmentActivity {
                     mUserAccount = bundle.getString("UserAccount");
                     mUserPresence = bundle.getParcelable("UserPresence");
 
-                    if(!isReady) {
-                        isReady = true;
+                    if(mPagerAdapter == null) {
                         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
                         mPager.setAdapter(mPagerAdapter);
                         mPager.setOffscreenPageLimit(NUM_PAGES);
@@ -164,11 +195,12 @@ public class ClientActivity extends FragmentActivity {
                         ParcelableRoster roster = bundle.getParcelable("roster");
                         Date fwotd = new Date(msg.getData().getLong("FWOTD"));
 
-                        if(!isReady || roster.getUserID().equals(mUserID)) {
+                        if(!isReady || mUserID.contains(roster.getUserID())) {
+                            isSummonerUpdated = true;
                             mUserPresence2 = roster;
                             mMatchHistory = newMatchHistory;
                             mFWOTD = fwotd;
-                            if(isReady) refreshView();
+                            refreshView();
                         }
                         else if(mSummonerInformationDialog != null) {
                             mSummonerInformationDialog.setFWOTD(fwotd);
@@ -179,23 +211,39 @@ public class ClientActivity extends FragmentActivity {
                     } else {
                         if(mSummonerInformationDialog != null) {
                             mSummonerInformationDialog.dismiss();
-                            Toast.makeText(getApplicationContext(), "Failed to retrieve summoner data", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), getString(R.string.error_failure_retrieving_summoner), Toast.LENGTH_SHORT).show();
                             mSummonerInformationDialog = null;
                         }
                     }
-
                     break;
 
-                case LolMessengerService.MSG_RECEIVE_MSG:
+                case LolMessengerService.MSG_REQUEST_SUMMONER_NAME:
+                    Log.i(TAG, "Get unknown entry name from service" + msg.getData().getString("id") + " / " + msg.getData().getString("name") );
+                    mUnknownRosterMap.put( msg.getData().getString("id"), msg.getData().getString("name") );
+                    isChatUpdated = true;
+                    refreshView();
+                    break;
+
+                case LolMessengerService.MSG_CHAT_RECEIVE_MESSAGE:
                     Log.i(TAG, "Get new message from service");
-                    //msg.getData().setClassLoader(ParcelableMessage.class.getClassLoader());
-                    //ParcelableMessage newMessage = msg.getData().getParcelable("message");
+                    isChatUpdated = true;
                     if(isReady) refreshView();
                     break;
 
+                case LolMessengerService.MSG_SUBSCRIBE_ROSTER:
+                    Log.i(TAG, "Get subscribtion message from service: " + msg.getData() );
+                    if(isReady) {
+                        openSubscriptionDialog(msg.getData());
+                    } else {
+                        mSubscriptionRequest.add(msg.getData());
+                    }
+                    break;
+
                 case LolMessengerService.MSG_SERVICE_DEAD:
-                    Log.i(TAG, "service is dead, stop and return to mainActivity");
-                    isRestart = true;
+                    Log.i(TAG, "service is dead, finish activity");
+                    LolMessengerApplication.setConnected(false);
+                    //isRestart = false;
+                    //isExiting = true;
                     finish();
                     break;
 
@@ -217,12 +265,7 @@ public class ClientActivity extends FragmentActivity {
             this.mInflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
             this.tempview = mInflater.inflate(R.layout.item_user_indicator, null);
             this.setDropDownViewResource(textViewResourceId);
-            this.mList = new ArrayList<String>();
-            mList.add("Chat");
-            mList.add("Away");
-            mList.add("Offline");
-            mList.add("Setting");
-            mList.add("Log Out");
+            this.mList = new ArrayList<String>( Arrays.asList(getResources().getStringArray(R.array.client_spinner)) );
         }
 
         @Override
@@ -286,21 +329,34 @@ public class ClientActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getActionBar().hide();
+        if(Build.VERSION.SDK_INT < 11) {
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+        } else {
+            getActionBar().hide();
+        }
 
+        /*
         if(!isRunningChatService()) {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
             return;
-        }
+        }*/
 
         //set content view
         setContentView(R.layout.activity_client_new);
 
+        /**add adview**/
+        AdView adView = new AdView(this, AdSize.BANNER, "a152219a82d191b");
+        LinearLayout adLayout = (LinearLayout) findViewById(R.id.adFrame);
+        adLayout.addView(adView);
+        AdRequest adRequest = new AdRequest();
+        adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
+        adView.loadAd(adRequest);
+
         //bind service
         Intent connectIntent = new Intent(ClientActivity.this, LolMessengerService.class);
-        bindService(connectIntent, mConnection, Context.BIND_AUTO_CREATE);
+        if(mServiceMessenger == null) bindService(connectIntent, mConnection, Context.BIND_AUTO_CREATE);
 
         //start SQLite
         mSQLiteDbAdapter = new SQLiteDbAdapter(this);
@@ -325,17 +381,17 @@ public class ClientActivity extends FragmentActivity {
                         mUserPresence.setMode("");
                         mUserPresence.setAvailablity("unavailable");
                         break;
-                    case 3:
+                    case 3: //setting
                         if(mUserPresence.getAvailablity().equals("unavailable")) mSpinner.setSelection(2);
                         else if(mUserPresence.getMode().equals("chat")) mSpinner.setSelection(0);
                         else if(mUserPresence.getMode().equals("away")) mSpinner.setSelection(1);
                         openSettingDialog();
                         return;
-                    case 4:
+                    case 4: //exit
                         if(mUserPresence.getAvailablity().equals("unavailable")) mSpinner.setSelection(2);
                         else if(mUserPresence.getMode().equals("chat")) mSpinner.setSelection(0);
                         else if(mUserPresence.getMode().equals("away")) mSpinner.setSelection(1);
-                        doLogout();
+                        doLogout(false);
                         return;
                 }
 
@@ -359,6 +415,7 @@ public class ClientActivity extends FragmentActivity {
         mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i2) {
+                refreshView();
             }
 
             @Override
@@ -368,27 +425,26 @@ public class ClientActivity extends FragmentActivity {
                         mBuddyTabButton.setAlpha((float) 1);
                         mBuddyTabButton.setBackgroundResource(R.drawable.tab_underbar);
                         mChatTabButton.setAlpha((float) 0.3);
-                        mChatTabButton.setBackground(null);
+                        mChatTabButton.setBackgroundColor(android.R.color.transparent);
                         mSettingTabButton.setAlpha((float) 0.3);
-                        mSettingTabButton.setBackground(null);
+                        mSettingTabButton.setBackgroundColor(android.R.color.transparent);
                         break;
                     case 1:
                         mBuddyTabButton.setAlpha((float)0.3);
-                        mBuddyTabButton.setBackground(null);
+                        mBuddyTabButton.setBackgroundColor(android.R.color.transparent);
                         mChatTabButton.setAlpha((float)1);
                         mChatTabButton.setBackgroundResource(R.drawable.tab_underbar);
                         mSettingTabButton.setAlpha((float)0.3);
-                        mSettingTabButton.setBackground(null);
+                        mSettingTabButton.setBackgroundColor(android.R.color.transparent);
                         break;
                     case 2:
                         mBuddyTabButton.setAlpha((float)0.3);
-                        mBuddyTabButton.setBackground(null);
+                        mBuddyTabButton.setBackgroundColor(android.R.color.transparent);
                         mChatTabButton.setAlpha((float) 0.3);
-                        mChatTabButton.setBackground(null);
+                        mChatTabButton.setBackgroundColor(android.R.color.transparent);
                         mSettingTabButton.setAlpha((float)1);
                         mSettingTabButton.setBackgroundResource(R.drawable.tab_underbar);
                         break;
-
                 }
             }
 
@@ -474,7 +530,7 @@ public class ClientActivity extends FragmentActivity {
     protected void onDestroy() {
         if(isReady) {
             mSQLiteDbAdapter.close();
-
+            /*
             Message msg = Message.obtain(null, LolMessengerService.MSG_UNREGISTER_CLIENT);
             msg.replyTo = mClientMessenger;
             try {
@@ -483,33 +539,78 @@ public class ClientActivity extends FragmentActivity {
                 e.printStackTrace();
             }
             unbindService(mConnection);
+            */
         }
-        Log.i(TAG," Destroyed");
+        Log.i(TAG," Destroyed, restart: " + isRestart );
 
-        if(isRestart == true) {
-            Intent i = getBaseContext().getPackageManager()
-                    .getLaunchIntentForPackage(getBaseContext().getPackageName());
+        if(isRestart) {
+            Log.i(TAG," Sending Restart Intent...");
+            Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
+            //Intent i = new Intent(this, LoginActivity.class);
+            i.putExtra("fromClient",true);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
-        }
+            super.onDestroy();
 
-        super.onDestroy();
+        } else {
+            System.exit(0);
+            android.os.Process.killProcess(android.os.Process.myPid());
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
     @Override
     public void onBackPressed() {
         if (mPager.getCurrentItem() == 0) {
-            super.onBackPressed();
+            moveTaskToBack(true);
+            return;
+            //super.onBackPressed();
         } else {
             mPager.setCurrentItem( 0 );
         }
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ( keyCode == KeyEvent.KEYCODE_MENU ) {
+            //Put the code for an action menu from the top here
+            mSpinner.setSoundEffectsEnabled(false);
+            mSpinner.performClick();
+            mSpinner.setSoundEffectsEnabled(true);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onPause() {
+        //unregister
+        if(isReady == true) {
+            if (mServiceMessenger != null) try {
+                Message msg = Message.obtain(null, LolMessengerService.MSG_UNREGISTER_CLIENT);
+                msg.replyTo = mClientMessenger;
+                mServiceMessenger.send(msg);
+                mServiceMessenger = null;
+                unbindService(mConnection);
+            } catch (Exception e) {
+                //Log.e(TAG, "service already destroyed");
+                e.printStackTrace();
+                //finish();
+            }
+        }
+
+        super.onPause();
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
-        //super.onSaveInstanceState(outState);
         outState.putInt("tab", getActionBar().getSelectedNavigationIndex());
         if(isReady) outState.putInt("PAGER", mPager.getCurrentItem());
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -520,15 +621,28 @@ public class ClientActivity extends FragmentActivity {
 
     @Override
     protected void onResume() {
+        super.onResume();
         if(!isRunningChatService()) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            isRestart = true;
             finish();
             return;
         }
 
+        //add
+        if(mServiceMessenger == null) {
+            Intent connectIntent = new Intent(this, LolMessengerService.class);
+            bindService(connectIntent, mConnection, 0);
+        } else try {
+            Log.i(TAG, "sending registering message to service");
+            Message msg = Message.obtain(null, LolMessengerService.MSG_REGISTER_CLIENT);
+            msg.replyTo = mClientMessenger;
+            mServiceMessenger.send(msg);
+
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+
         if(isReady) refreshView();
-        super.onResume();
     }
 
     public void refreshRoster() {
@@ -536,7 +650,7 @@ public class ClientActivity extends FragmentActivity {
         //send roster request message to service
         Message msg = Message.obtain(null, LolMessengerService.MSG_REQUEST_ROSTER);
         msg.replyTo = mClientMessenger;
-        try {
+        if (mServiceMessenger != null) try {
             mServiceMessenger.send(msg);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -559,19 +673,66 @@ public class ClientActivity extends FragmentActivity {
             }
         }
 
-        Log.i(TAG, "request Match history message");
+        Log.i(TAG, "request Match history message, replyTo:" + mClientMessenger);
         Message msg = Message.obtain(null, LolMessengerService.MSG_REQUEST_MATCH);
         msg.replyTo = mClientMessenger;
         Bundle bundle = new Bundle();
         bundle.putString("userID", userID);
         msg.setData(bundle);
-        try {
+        if (mServiceMessenger != null) try {
             mServiceMessenger.send(msg);
         } catch (RemoteException e) {
             e.printStackTrace();
             return;
         }
 
+    }
+
+    public void openSubscriptionDialog(final Bundle bundle) {
+        ConfirmationDialog dialog = new ConfirmationDialog();
+        dialog.setDialogTitle(getString(R.string.dialog_title_buddy_subscription));
+        dialog.setDialogContent(String.format(getString(R.string.dialog_content_buddy_subscription), bundle.getString("name")));
+        //"A friend request from" + "\n" + bundle.getString("name") + "\n" + "arrived. Do you want to accept?");
+        dialog.setPositiveButtonText(getString(R.string.action_accept));
+        dialog.setNegativeButtonText(getString(R.string.action_reject));
+        dialog.setPositiveOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Message msg = Message.obtain(null, LolMessengerService.MSG_SUBSCRIBE_ROSTER);
+                msg.replyTo = mClientMessenger;
+                msg.arg1 = 1;
+                msg.setData(bundle);
+                if (mServiceMessenger != null) try {
+                    mServiceMessenger.send(msg);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        dialog.setNegativeOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Message msg = Message.obtain(null, LolMessengerService.MSG_SUBSCRIBE_ROSTER);
+                msg.replyTo = mClientMessenger;
+                msg.arg1 = 0;
+                msg.setData(bundle);
+                if (mServiceMessenger != null) try {
+                    mServiceMessenger.send(msg);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        dialog.show(ft, "dialog");
     }
 
     public void openSummonerDialog(String userID) {
@@ -602,7 +763,7 @@ public class ClientActivity extends FragmentActivity {
     }
 
     public void openSettingDialog() {
-        SettingFragment dialog = new SettingFragment(ClientActivity.this, mUserAccount, mUserPresence);
+        SettingFragment dialog = new SettingFragment(ClientActivity.this, mUserPresence);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
         if (prev != null) {
@@ -624,6 +785,8 @@ public class ClientActivity extends FragmentActivity {
         intent.putExtra("buddy", mRosterMap.get(buddyID));
         intent.setExtrasClassLoader(ParcelableRoster.class.getClassLoader());
         startActivity(intent);
+
+        isChatUpdated = true;
     }
 
     public void updatePresence(ParcelableRoster userPresence) {
@@ -635,9 +798,9 @@ public class ClientActivity extends FragmentActivity {
         Bundle bundle = new Bundle();
         bundle.setClassLoader(ParcelableRoster.class.getClassLoader());
         bundle.putParcelable("userPresence", userPresence);
-
         msg.setData(bundle);
-        try {
+
+        if (mServiceMessenger != null) try {
             mServiceMessenger.send(msg);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -645,10 +808,13 @@ public class ClientActivity extends FragmentActivity {
     }
 
     public void updateSetting(Bundle bundle) {
+
+        ((LolMessengerApplication)getApplication()).updateSettings(bundle);
+
         Message msg = Message.obtain(null, LolMessengerService.MSG_UPDATE_SETTING);
         msg.replyTo = mClientMessenger;
         msg.setData(bundle);
-        try {
+        if (mServiceMessenger != null) try {
             mServiceMessenger.send(msg);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -656,24 +822,32 @@ public class ClientActivity extends FragmentActivity {
 
     }
 
-    public void doLogout() {
+    public void doLogout(final boolean restart) {
         ConfirmationDialog dialog = new ConfirmationDialog();
-        dialog.setDialogTitle("Log Out");
-        dialog.setDialogContent("Are you sure you want to log out?");
+        dialog.setDialogTitle( restart ? getString(R.string.dialog_title_logout) : getString(R.string.dialog_title_exit));
+        dialog.setDialogContent( restart ? getString(R.string.dialog_content_logout) : getString(R.string.dialog_content_exit));
         dialog.setPositiveOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Message msg = Message.obtain(null, LolMessengerService.MSG_STOP_SERVICE);
                 msg.replyTo = mClientMessenger;
-                msg.arg1 = 1; //restart application
-                try {
+                msg.arg1 = restart ? 1 : 0; //restart application
+                if (mServiceMessenger != null) try {
                     mServiceMessenger.send(msg);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
 
-                //unbindService(mConnection); this will be called in onDestroy()
-                isRestart = true;
+                isRestart = restart;
+                isExiting = !restart;
+
+                if(isRestart) {
+                    SharedPreferences prefs = getSharedPreferences("account", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor ed = prefs.edit();
+                    ed.putBoolean("auto", false);
+                    ed.commit();
+                }
+
                 Log.i(TAG, "logout");
                 ClientActivity.this.finish();
             }
@@ -689,7 +863,6 @@ public class ClientActivity extends FragmentActivity {
 
         // Create and show the dialog.
         dialog.show(ft, "dialog");
-
     }
 
     public Map<String, ParcelableRoster> getRosterMap() {
@@ -698,6 +871,21 @@ public class ClientActivity extends FragmentActivity {
 
     public ParcelableRoster getRoster(String userID) {
         return mRosterMap.get(userID);
+    }
+
+    public String getUnknownRosterName(String userID) {
+        String result = mUnknownRosterMap.get(userID);
+        if(result == null) try {
+            result = getString(R.string.unknown_entry);
+            Message message = Message.obtain(null, LolMessengerService.MSG_REQUEST_SUMMONER_NAME);
+            Bundle bundle = new Bundle();
+            bundle.putString("id", userID);
+            message.setData(bundle);
+            mServiceMessenger.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public String getUserID() {
@@ -713,6 +901,7 @@ public class ClientActivity extends FragmentActivity {
     }
 
     public SQLiteDbAdapter getSQLiteDbAdapter() {
+        isChatUpdated = true;
         return mSQLiteDbAdapter;
     }
 
@@ -726,28 +915,49 @@ public class ClientActivity extends FragmentActivity {
 
     public void refreshView() {
 
-        int count=0 ;
-        for(ParcelableRoster roster : mRosterMap.values()) {
-            if(roster.getAvailablity().equals("available")) count++;
+        if(mSubscriptionRequest.size() > 0) {
+            openSubscriptionDialog(mSubscriptionRequest.get(0));
+            mSubscriptionRequest.remove(0);
         }
 
-        mBuddyCount.setText(String.valueOf(count));
-        mChatCount.setText(String.valueOf(mSQLiteDbAdapter.getNotReadMessageCount(mUserID)));
+        if(isRosterUpdated) {
+            int count=0 ;
+            for(ParcelableRoster roster : mRosterMap.values()) {
+                if(roster.getAvailablity().equals("available")) count++;
+            }
+            mBuddyCount.setText(String.valueOf(count));
+        }
+
+        if(isChatUpdated) {
+            mChatCount.setText(String.valueOf(mSQLiteDbAdapter.getNotReadMessageCount(mUserID)));
+        }
 
         Fragment currentFragment = ((ScreenSlidePagerAdapter)mPagerAdapter).getFragment(mPager.getCurrentItem());
         if(currentFragment != null ) {
             switch(mPager.getCurrentItem()) {
                 case 0:
-                    ((BuddyListFragment) currentFragment ).refreshBuddyList();
+                    if(isRosterUpdated) {
+                        Log.i(TAG,"Roster view updated");
+                        ((BuddyListFragment) currentFragment ).refreshBuddyList();
+                        isRosterUpdated = false;
+                    }
                     break;
                 case 1:
-                    ((ChatListFragment) currentFragment ).refreshChatList();
+                    if(isChatUpdated) {  //상태(오프라인) 바뀌는거 표시해주기위해 Roster도 포함
+                        Log.i(TAG,"Chatlist view updated");
+                        ((ChatListFragment) currentFragment ).refreshChatList();
+                        isChatUpdated = false;
+                    }
                     break;
                 case 2:
-                    ((SummonerInformationDialogFragment) currentFragment ).setRoster(mUserPresence2);
-                    ((SummonerInformationDialogFragment) currentFragment ).setFWOTD(mFWOTD);
-                    ((SummonerInformationDialogFragment) currentFragment ).setMatchHistory(mMatchHistory);
-                    ((SummonerInformationDialogFragment) currentFragment ).refreshSummoner();
+                    if(isSummonerUpdated) {
+                        Log.i(TAG,"summoner view updated");
+                        ((SummonerInformationDialogFragment) currentFragment ).setRoster(mUserPresence2);
+                        ((SummonerInformationDialogFragment) currentFragment ).setFWOTD(mFWOTD);
+                        ((SummonerInformationDialogFragment) currentFragment ).setMatchHistory(mMatchHistory);
+                        ((SummonerInformationDialogFragment) currentFragment ).refreshSummoner();
+                        isSummonerUpdated = false;
+                    }
                     break;
                 default:
                     break;
@@ -765,42 +975,37 @@ public class ClientActivity extends FragmentActivity {
         if(mUserPresence.getAvailablity().equals("available")) {
             if(mUserPresence.getMode().equals("dnd")) {
                 if(mUserPresence.getGameStatus().equals("inGame")) {
-                    statusString = "In Game : " + mUserPresence.getSkinname() + " (" + ((System.currentTimeMillis() - mUserPresence.getTimeStamp())/60000) + "min)";
+                    statusString = getString(R.string.status_inGame) + " : " + mUserPresence.getSkinname() + " (" + ((System.currentTimeMillis() - mUserPresence.getTimeStamp())/60000) + getString(R.string.status_timestamp_minute);
                 }
                 else if(mUserPresence.getGameStatus().equals("teamSelect")) {
-                    statusString = "Selecting Team";
+                    statusString = getString(R.string.status_teamSelect);
                 }
                 else if(mUserPresence.getGameStatus().equals("hostingPracticeGame")) {
-                    statusString = "Hosting Practice Game";
+                    statusString = getString(R.string.status_hostingPracticeGame);
                 }
                 else {
-                    statusString = "Finding Game";
+                    statusString = getString(R.string.status_lookingNewGame);
                 }
                 mUserStatusIcon.setImageResource(R.drawable.icon_yellow);
                 mUserStatusView.setTextColor( Color.parseColor("#ffe400") );
             } else if(mUserPresence.getMode().equals("away")) {
-                Log.i(TAG, "away");
-                statusString = "Away";
+                statusString = getString(R.string.status_away);
                 mUserStatusIcon.setImageResource(R.drawable.icon_red);
                 mUserStatusView.setTextColor(Color.RED);
             } else { // if(mUserPresence.getMode().equals("chat"))
-                Log.i(TAG, "chat");
                 mUserStatusIcon.setImageResource(R.drawable.icon_green);
-
                 if(!mUserPresence.getStatusMsg().isEmpty()) {
                     statusString = mUserPresence.getStatusMsg();
                 } else {
-                    statusString = "Online";
+                    statusString = getString(R.string.status_online);
                 }
                 mUserStatusView.setTextColor( Color.parseColor("#1DB918") );
             }
         } else {
-            Log.i(TAG, "off");
-            statusString = "Offline";
+            statusString = getString(R.string.status_offline);
             mUserStatusView.setTextColor( Color.parseColor("#646464") );
             mUserStatusIcon.setImageResource(R.drawable.icon_black);
         }
-
         mUserStatusView.setText(statusString);
     }
 
@@ -817,6 +1022,7 @@ public class ClientActivity extends FragmentActivity {
                 return true;
             }
         }
+        Log.e(TAG, "LolMessengerService is not running. ");
         return false;
     }
 }

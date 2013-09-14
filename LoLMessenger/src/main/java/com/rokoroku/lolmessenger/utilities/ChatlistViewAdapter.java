@@ -14,8 +14,11 @@ import com.rokoroku.lolmessenger.R;
 import com.rokoroku.lolmessenger.classes.ChatInformation;
 import com.rokoroku.lolmessenger.classes.ParcelableRoster;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -29,6 +32,10 @@ public class ChatlistViewAdapter extends BaseAdapter{
     private Activity mActivity;
 
     public ChatlistViewAdapter(ArrayList<ChatInformation> listItem, Map<String, ParcelableRoster> rosterMap) {
+        setItem(listItem, rosterMap);
+    }
+
+    public void setItem(ArrayList<ChatInformation> listItem, Map<String, ParcelableRoster> rosterMap) {
         this.mChatList = listItem;
         this.mRosterMap = rosterMap;
     }
@@ -64,72 +71,111 @@ public class ChatlistViewAdapter extends BaseAdapter{
             convertView = mInflater.inflate(R.layout.row_chatlist, null);
         }
 
-        //edit Name TextView
-        TextView viewName = (TextView) convertView.findViewById(R.id.textName);
-        viewName.setText(tempBuddy.getUserName());
-
-        //edit Name TextView
-        TextView viewMessage = (TextView) convertView.findViewById(R.id.textMessage);
-        viewMessage.setText(tempEntry.getLatestMessage().getBody());
-
-        //edit Timestamp
-        TextView viewTime = (TextView) convertView.findViewById(R.id.textTime);
-
-        Date today = new Date();
-        String timeString;
-        long diff = ( today.getTime() - tempEntry.getLatestMessage().getTimeStamp() ) / (24 * 60 * 60 * 1000);
-
-        if(diff == 0) {
-            timeString = new String(String.format("%tR", tempEntry.getLatestMessage().getTimeStamp()));
-        } else {
-            timeString = new String(String.format("%tb %<te", tempEntry.getLatestMessage().getTimeStamp()));
-        }
-        viewTime.setText(timeString);
-
-        //status icon & name color
-        ImageView statusIcon = (ImageView) convertView.findViewById(R.id.statusIcon);
-        if(!tempBuddy.getAvailablity().equals("unavailable")) {
-            if(tempBuddy.getMode().equals("chat")) {
-                statusIcon.setImageResource(R.drawable.icon_green);
-                viewName.setTextColor(Color.parseColor("#1db918"));
-            } else if(tempBuddy.getMode().equals("away")) {
-                statusIcon.setImageResource(R.drawable.icon_red);
-                viewName.setTextColor(Color.RED);
-            } else if(tempBuddy.getMode().equals("dnd")) {
-                statusIcon.setImageResource(R.drawable.icon_yellow);
-                viewName.setTextColor(Color.parseColor("#ffe400"));
+        try {
+            //edit Name TextView
+            TextView viewName = (TextView) convertView.findViewById(R.id.textName);
+            if(tempBuddy == null) {
+                String unknownEntryName = ((ClientActivity) mActivity).getUnknownRosterName(tempEntry.getBuddyID());
+                if(unknownEntryName != null ) {
+                    viewName.setText(unknownEntryName);
+                }
+                else {
+                    viewName.setText(mActivity.getString(R.string.unknown_entry));
+                }
             }
-        } else {
-            statusIcon.setImageResource(R.drawable.icon_black);
-            viewName.setTextColor(Color.parseColor("#646464"));
-        }
+            else viewName.setText(tempBuddy.getUserName());
 
-        //reply icon
-        ImageView replyIcon = (ImageView) convertView.findViewById(R.id.replyIcon);
-        if(tempEntry.getLatestMessage().getFromID().equals(tempEntry.getBuddyID())) {
-            replyIcon.setVisibility(View.GONE);
-        } else {
-            replyIcon.setVisibility(View.VISIBLE);
-        }
+            //edit Name TextView
+            TextView viewMessage = (TextView) convertView.findViewById(R.id.textMessage);
+            String trimmedString = tempEntry.getLatestMessage().getBody();
+            //if(trimmedString.contains("\n")) { trimmedString.substring(0,trimmedString.indexOf("\n")); }
+            if(trimmedString.contains("\n")) {
+                trimmedString = trimmedString.substring(0,trimmedString.indexOf('\n'));
+            }
+            viewMessage.setText(trimmedString);
 
-        //message count
-        final TextView countView = (TextView) convertView.findViewById(R.id.countIcon);
-        if(tempEntry.getCount()>0) {
-            countView.setText(String.format("%d", tempEntry.getCount()));
-            countView.setVisibility(View.VISIBLE);
-        } else {
-            countView.setVisibility(View.GONE);
-        }
+            //edit Timestamp
+            TextView viewTime = (TextView) convertView.findViewById(R.id.textTime);
 
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Toast.makeText(activity, tempEntry.getUserName(),Toast.LENGTH_SHORT).show();
+            SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            Date today = new Date();
+            String timeString;
+
+            if(removeTime(new Date(tempEntry.getLatestMessage().getTimeStamp())).before(removeTime(today))) {
+                if( Locale.getDefault().getLanguage().equals("ko") ) { //\uC77C == 일
+                    timeString = String.format("%tb %<te\uC77C", tempEntry.getLatestMessage().getTimeStamp());
+                } else {
+                    timeString = String.format("%tb %<te", tempEntry.getLatestMessage().getTimeStamp());
+                }
+            } else {
+                timeString = String.format("%tR", tempEntry.getLatestMessage().getTimeStamp());
+            }
+
+            viewTime.setText(timeString);
+
+            //status icon & name color
+            ImageView statusIcon = (ImageView) convertView.findViewById(R.id.statusIcon);
+            if(tempBuddy != null && !tempBuddy.getAvailablity().equals("unavailable")) {
+                if(tempBuddy.getMode().equals("chat")) {
+                    statusIcon.setImageResource(R.drawable.icon_green);
+                    viewName.setTextColor(Color.parseColor("#1db918"));
+                } else if(tempBuddy.getMode().equals("away")) {
+                    statusIcon.setImageResource(R.drawable.icon_red);
+                    viewName.setTextColor(Color.RED);
+                } else if(tempBuddy.getMode().equals("dnd")) {
+                    statusIcon.setImageResource(R.drawable.icon_yellow);
+                    viewName.setTextColor(Color.parseColor("#ffe400"));
+                }
+            } else {
+                statusIcon.setImageResource(R.drawable.icon_black);
+                viewName.setTextColor(Color.parseColor("#646464"));
+            }
+
+            //reply icon
+            ImageView replyIcon = (ImageView) convertView.findViewById(R.id.replyIcon);
+            if(tempEntry.getLatestMessage().getFromID().equals(tempEntry.getBuddyID())) {
+                replyIcon.setVisibility(View.GONE);
+            } else {
+                replyIcon.setVisibility(View.VISIBLE);
+            }
+
+            //message count
+            final TextView countView = (TextView) convertView.findViewById(R.id.countIcon);
+            if(tempEntry.getCount()>0) {
+                countView.setText(String.format("%d", tempEntry.getCount()));
+                countView.setVisibility(View.VISIBLE);
+            } else {
                 countView.setVisibility(View.GONE);
-                ( (ClientActivity)mActivity ).openChat(tempEntry.getBuddyID());
             }
-        });
 
-        return convertView;
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Toast.makeText(activity, tempEntry.getUserName(),Toast.LENGTH_SHORT).show();
+                    countView.setVisibility(View.GONE);
+                    ( (ClientActivity)mActivity ).openChat(tempEntry.getBuddyID());
+                }
+            });
+
+            convertView.setVisibility(View.VISIBLE);
+            return convertView;
+
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            convertView.setVisibility(View.GONE);
+            return convertView;
+        }
     }
+
+    public Date removeTime(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
 }

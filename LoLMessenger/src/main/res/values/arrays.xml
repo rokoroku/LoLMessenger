@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="client_spinner">
+        <item>@string/client_spinner_item_01</item>
+        <item>@string/client_spinner_item_02</item>
+        <item>@string/client_spinner_item_03</item>
+        <item>@string/client_spinner_item_04</item>
+        <item>@string/client_spinner_item_05</item>
+    </string-array>
+
+    <string-array name="map_strings">
+        <item>1</item> <item>"Summoner's Rift"</item>
+        <item>8</item> <item>The Crystal Scar</item>
+        <item>10</item><item>The Twisted Treeline</item>
+        <item>12</item><item>The Howling Abyss</item>
+        <item>13</item><item>Magma Chamber</item>
+        <item>14</item><item>Proving Grounds</item>
+    </string-array>
+
+    <string-array name="champ_strings"/>
+
+</resources>

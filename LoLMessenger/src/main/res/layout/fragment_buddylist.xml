@@ -18,7 +18,7 @@
         <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Friends"
+                android:text="@string/title_buddylist"
                 android:textColor="#bbb"
                 android:textSize="16dp"
                 android:gravity="center_horizontal"/>

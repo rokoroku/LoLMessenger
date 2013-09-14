@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.rokoroku.lolmessenger"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="19"
+    android:versionName="1.1.9" >
 
     <uses-sdk
-        android:minSdkVersion="13"
-        android:targetSdkVersion="16" />
+        android:minSdkVersion="11"
+        android:targetSdkVersion="16"/>
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -16,34 +16,39 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:name=".LolMessengerApplication"
         android:theme="@style/AppTheme" >
+
         <activity
             android:name="com.rokoroku.lolmessenger.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="com.rokoroku.lolmessenger.LoginActivity"
             android:windowSoftInputMode="adjustResize"
+            android:configChanges="uiMode|orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_login" >
         </activity>
-        <activity
-            android:name="com.rokoroku.lolmessenger.SplashActivity"
-            android:label="@string/title_activity_splash" >
-        </activity>
+
         <activity
             android:name="com.rokoroku.lolmessenger.ClientActivity"
-            android:label="@string/title_buddy_list"
-            android:launchMode="singleTask" >
+            android:label="@string/title_activity_client"
+            android:configChanges="uiMode|orientation|screenSize|keyboardHidden"
+            android:launchMode="singleTop" >
         </activity>
 
         <service
             android:name=".LolMessengerService"
-            android:process=":remote" /> <!--android:process=":remote" -->
+            android:process=":remote" >
+            <intent-filter>
+                <action android:name="com.rokoroku.lolmessenger.LolMessengerService" />
+            </intent-filter>
+        </service>
 
         <activity
             android:name="com.rokoroku.lolmessenger.ChatActivity"
@@ -53,14 +58,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.rokoroku.lolconnect.ClientActivity" />
         </activity>
-        <activity
-            android:name="com.rokoroku.lolmessenger.EditingActivity"
-            android:label="@string/title_activity_editing"
-            android:parentActivityName="com.rokoroku.lolconnect.ClientActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.rokoroku.lolconnect.ClientActivity" />
-        </activity>
+
+        <activity android:name="com.google.ads.AdActivity"
+                  android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
+
     </application>
 
 </manifest>

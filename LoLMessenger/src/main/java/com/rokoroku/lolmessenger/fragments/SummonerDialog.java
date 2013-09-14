@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.rokoroku.lolmessenger.ClientActivity;
+import com.rokoroku.lolmessenger.LolMessengerApplication;
 import com.rokoroku.lolmessenger.R;
 import com.rokoroku.lolmessenger.classes.ParcelableRoster;
 
@@ -83,9 +84,13 @@ public class SummonerDialog extends DialogFragment {
         }
 
         viewSummonerName.setText(mRoster.getUserName());
-        viewSummonerLevel.setText("Level " + mRoster.getSummonerLevel());
+        if(mRoster.getSummonerLevel() > 0 ) {
+            viewSummonerLevel.setText(mActivity.getString(R.string.status_level) + " " + mRoster.getSummonerLevel());
+        } else {
+            viewSummonerLevel.setVisibility(View.INVISIBLE);
+        }
 
-        if(mRoster.getRankedLeagueTier() == null || mRoster.getRankedLeagueTier().isEmpty()) {
+        if(mRoster.getRankedLeagueTier() == null || mRoster.getRankedLeagueTier().isEmpty() || mRoster.getRankedLeagueTier().equals("UNRANKED")) {
             viewSummonerTier.setVisibility(View.GONE);
             viewSummonerTierGroup.setVisibility(View.GONE);
         } else {
@@ -95,37 +100,61 @@ public class SummonerDialog extends DialogFragment {
 
         if(mRoster.getMode().equals("dnd")) {
             if(mRoster.getGameStatus().equals("inGame")) {
-                viewSummonerStatus1.setText("In Game");
-                viewSummonerStatus2.setText("Now Playing : " + mRoster.getSkinname());
+
+                String champ = mRoster.getSkinname();
+                if(((LolMessengerApplication) mActivity.getApplication()).getChampStringMap() != null ) try {
+                    String champSubstitute = ((LolMessengerApplication)mActivity.getApplication()).getChampStringMap().get(champ);
+                    if(champSubstitute != null) champ = champSubstitute;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                String inGameString ;
+                String matchType = mRoster.getGameQueueType();
+                if(matchType.contains("ARAM"))          inGameString = mActivity.getString(R.string.status_inNormalGame);
+                else if(matchType.contains("NORMAL"))   inGameString = mActivity.getString(R.string.status_inNormalGame);
+                else if(matchType.contains("UNRANKED")) inGameString = mActivity.getString(R.string.status_inNormalGame);
+                else if(matchType.contains("RANKED"))   inGameString = mActivity.getString(R.string.status_inRankedGame);
+                else if(matchType.contains("NONE"))     inGameString = mActivity.getString(R.string.status_inCustomGame);
+                else if(matchType.contains("BOT"))      inGameString = mActivity.getString(R.string.status_inAIGame);
+                else inGameString = mActivity.getString(R.string.status_inGame);
+
+                viewSummonerStatus1.setText(inGameString);
+                viewSummonerStatus2.setText(mActivity.getString(R.string.status_nowPlayingChamp) + " : " + champ);
                 viewSummonerStatus2.setVisibility(View.VISIBLE);
             }
             else if(mRoster.getGameStatus().equals("teamSelect")) {
-                viewSummonerStatus1.setText("Selecting Team");
+                viewSummonerStatus1.setText(mActivity.getString(R.string.status_teamSelect));
                 viewSummonerStatus2.setVisibility(View.GONE);
             }
             else if(mRoster.getGameStatus().equals("hostingPracticeGame")) {
-                viewSummonerStatus1.setText("Hosting a Practice Game");
+                viewSummonerStatus1.setText(mActivity.getString(R.string.status_hostingPracticeGame));
                 viewSummonerStatus2.setVisibility(View.GONE);
+            }
+            else if(mRoster.getGameStatus().equals("spectating")) {
+                viewSummonerStatus1.setText(mActivity.getString(R.string.status_spectating));
+                viewSummonerStatus2.setVisibility(View.GONE);
+                viewSummonerStatus3.setVisibility(View.GONE);
             }
             else {
-                viewSummonerStatus1.setText("Looking for a Game");
+                viewSummonerStatus1.setText(mActivity.getString(R.string.status_lookingNewGame));
                 viewSummonerStatus2.setVisibility(View.GONE);
             }
-            viewSummonerStatus3.setText(String.valueOf((System.currentTimeMillis() - mRoster.getTimeStamp())/60000) + " min");
+            viewSummonerStatus3.setText(String.valueOf((System.currentTimeMillis() - mRoster.getTimeStamp()) / 60000) + mActivity.getString(R.string.status_timestamp_minute));
             viewSummonerStatus1.setTextColor(Color.parseColor("#ffe400"));
             viewSummonerStatus2.setTextColor(Color.parseColor("#ffe400"));
             viewSummonerStatus3.setTextColor(Color.parseColor("#ffe400"));
         } else if(mRoster.getMode().equals("away")) {
-            viewSummonerStatus1.setText("Away");
+            viewSummonerStatus1.setText(mActivity.getString(R.string.status_away));
             viewSummonerStatus1.setTextColor(Color.RED);
             viewSummonerStatus2.setVisibility(View.GONE);
             viewSummonerStatus3.setVisibility(View.GONE);
         } else { // if(tempEntry.getMode().equals("chat")) .. 안드로이드 메신저 쓰는사람은 이 값이 없음.
-            viewSummonerStatus1.setTextColor(Color.parseColor("#1DB918"));
-            viewSummonerStatus2.setTextColor(Color.parseColor("#1DB918"));
             viewSummonerStatus3.setVisibility(View.GONE);
-            viewSummonerStatus1.setText("Online");
+            viewSummonerStatus1.setTextColor(Color.parseColor("#1DB918"));
+            viewSummonerStatus1.setText(mActivity.getString(R.string.status_online));
             if(mRoster.getStatusMsg() != null && !mRoster.getStatusMsg().isEmpty() ) {
+                viewSummonerStatus2.setTextColor(Color.parseColor("#1DB918"));
                 viewSummonerStatus2.setText(mRoster.getStatusMsg());
             } else {
                 viewSummonerStatus2.setVisibility(View.GONE);

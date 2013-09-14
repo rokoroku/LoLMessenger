@@ -65,6 +65,7 @@
                     android:text="바루스의 용기병단"
                     android:id="@+id/tierGroup"
                     android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"
                     android:textColor="#cc7024"
                     android:textSize="14dp"/>
 
@@ -84,6 +85,7 @@
                     android:text="플레이 중인 챔피언 : 레오나"
                     android:id="@+id/status2"
                     android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"
                     android:textColor="#ffe800"
                     android:textSize="14dp"
                     android:singleLine="false"/>
@@ -94,6 +96,7 @@
                     android:text="21분 경과"
                     android:id="@+id/timestamp"
                     android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"
                     android:textColor="#ffe800"
                     android:singleLine="true"
                     android:textSize="14dp"/>
@@ -113,7 +116,7 @@
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
-                android:text="Chat"
+                android:text="@string/action_chat"
                 android:id="@+id/buttonChat"
                 android:background="@drawable/btn_lol_style"
                 android:layout_weight="1"
@@ -124,7 +127,7 @@
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
-                android:text="View"
+                android:text="@string/action_view"
                 android:id="@+id/buttonLook"
                 android:background="@drawable/btn_lol_style"
                 android:layout_weight="1"

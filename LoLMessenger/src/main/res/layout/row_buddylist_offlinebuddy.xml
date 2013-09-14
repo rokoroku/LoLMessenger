@@ -5,22 +5,21 @@
         android:layout_height="wrap_content"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:baselineAligned="false"
-        android:gravity="center_vertical"
-        android:alpha="0.4"
-        >
+        android:gravity="center_vertical">
 
     <TextView
             android:layout_width="0dp"
             android:layout_height="24dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
             android:text="offline user"
             android:id="@+id/textViewName2"
             android:textSize="16dp"
             android:layout_weight="1"
-            android:textColor="#ddd"
+            android:textColor="#666"
             android:singleLine="true"
             android:gravity="center_vertical"
-            android:autoText="false"
-            android:background="@drawable/buddy_container"
+            android:background="@drawable/buddy_container_2"
             android:paddingLeft="40dp"/>
 
 </LinearLayout>

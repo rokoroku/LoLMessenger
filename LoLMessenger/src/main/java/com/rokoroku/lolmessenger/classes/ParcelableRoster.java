@@ -31,8 +31,8 @@ public class ParcelableRoster implements Parcelable {
     private String mode = "chat";
 
     //Presense Status Field
-    private int profileIcon = 1;          // 안되는듯
-    private int summonerLevel = 30;       // 30
+    private int profileIcon = 0;         // 안되는듯
+    private int summonerLevel = 0;        // 30
     private String statusMsg;             // 내 상태
     private int wins = 0;                 // 1000
     private int leaves = 0;               // 0
@@ -48,6 +48,7 @@ public class ParcelableRoster implements Parcelable {
     private String gameStatus;            // OutOfGame
     private long timeStamp;               // 1376385325742
 
+    //Field from LeagueSummoner
     private int leaguePoints;
 
     //Constructor
@@ -57,27 +58,33 @@ public class ParcelableRoster implements Parcelable {
     //Constructor2
     public ParcelableRoster(RosterEntry entry, Presence presence) {
 
-        // entry data 파싱
-        this.userID = entry.getUser();
-        this.userName = entry.getName();
-        for(RosterGroup rosterGroup : entry.getGroups()) { this.group = rosterGroup.getName(); }
+        if(entry != null) {
+            // entry data 파싱
+            this.userID = entry.getUser();
+            this.userName = entry.getName();
+            for(RosterGroup rosterGroup : entry.getGroups()) { this.group = rosterGroup.getName(); }
+        }
 
-        this.availablity = presence.getType().toString();
-        if(presence.getMode() != null) this.mode = presence.getMode().toString();
-
-        // 접속상태 확인
-        if(!availablity.equals("unavailable")) {
-            parseStatusString( presence.getStatus() );
+        if(presence != null) {
+            // 접속상태 확인
+            this.availablity = presence.getType().toString();
+            if(availablity.equals("available")) parseStatusString( presence.getStatus() );
+            if(presence.getMode() != null) this.mode = presence.getMode().toString();
         }
     }
 
     public ParcelableRoster(LeagueSummoner summoner) {
-        Log.i("summoner", summoner.toString());
-        this.summonerLevel = summoner.getLevel();
         this.userID = new String("sum" + summoner.getId() + "@pvp.net");
+        fillSummonerData(summoner);
+    }
+
+    public void fillSummonerData(LeagueSummoner summoner) {
+
+        this.summonerLevel = summoner.getLevel();
         this.userName = summoner.getName();
         this.profileIcon = summoner.getProfileIconId();
         //this.loses = summoner.getLeagueStats().getLosses();
+
         if(summoner.getLeagueStats()!=null) {
             this.rankedWins = summoner.getLeagueStats().getWins();
             this.rankedLeagueTier = summoner.getLeagueStats().getTier().name();
@@ -107,7 +114,7 @@ public class ParcelableRoster implements Parcelable {
                     case XmlPullParser.START_TAG:
                         String startTag = parser.getName();
                         if(initbody != true && startTag.equals("body")) { initbody = true; }
-                        else if(initbody == true) {
+                        else if(initbody == true) try {
                             if(startTag.equals("profileIcon")) { profileIcon = Integer.parseInt(parser.nextText()); }
                             if(startTag.equals("level")) { summonerLevel = Integer.parseInt(parser.nextText()); }
                             if(startTag.equals("wins")) { wins = Integer.parseInt(parser.nextText()); }
@@ -126,10 +133,13 @@ public class ParcelableRoster implements Parcelable {
                             if(startTag.equals("gameQueueType")) { gameQueueType = parser.nextText(); }
                             if(startTag.equals("gameStatus")) { gameStatus = parser.nextText(); }
                             if(startTag.equals("timeStamp")) { timeStamp = Long.parseLong( parser.nextText()); }
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                            //ignore
                         }
                         break;
                     case XmlPullParser.END_TAG:
-                        String endTag = parser.getName();
+                        //String endTag = parser.getName();
                         //if(endTag.equals("body")) { Log.v("LOLMESSENGER", "EOP"); }
                         break;
                 }//end switch
@@ -138,11 +148,12 @@ public class ParcelableRoster implements Parcelable {
 
         } catch (XmlPullParserException e) {
             e.printStackTrace();
+            Log.i("ParcelableRoster", "weird user infromation :" + userID );
+            this.statusMsg = "";
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
-            Log.e("ParcelableRoster", "weird user :" + userID + " " + userName);
-            //this.mode = "";
+            Log.i("ParcelableRoster", "weird user infromation :" + userID + " (" + userName +")");
             this.statusMsg = "";
         }
     }
@@ -324,7 +335,14 @@ public class ParcelableRoster implements Parcelable {
         this.timeStamp = timeStamp;
     }
 
-    public String getPresenseStatus() {
+    public String toPresencePacketString() {
+        String statusMsgText = statusMsg;
+        if(statusMsgText != null) {
+            statusMsgText = statusMsgText.replace("&", "&amp;");
+            statusMsgText = statusMsgText.replace("<", "&lt;");
+            statusMsgText = statusMsgText.replace(">", "&gt;");
+        }
+
         String status = "<body>"
                 + "<profileIcon>" + profileIcon + "</profileIcon>"
                 + ((summonerLevel > 0) ? "<level>" + summonerLevel + "</level>" : "<level />" )
@@ -336,13 +354,12 @@ public class ParcelableRoster implements Parcelable {
                 + ((rankedWins > 0) ? "<rankedWins>" + wins + "</rankedWins>" : "" )
                 + "<rankedLosses>0</rankedLosses>"
                 + "<rankedRating>0</rankedRating>"
-                + "<tier>UNRANKED</tier>"
                 + (rankedLeagueName != null ? "<rankedLeagueName>" + rankedLeagueName + "</rankedLeagueName>" : "<rankedLeagueName />")
                 + (rankedLeagueDivision != null? "<rankedLeagueDivision>" + rankedLeagueDivision + "</rankedLeagueDivision>" : "<rankedLeagueDivision />")
-                + (rankedLeagueTier != null ? "<rankedLeagueTier>" + rankedLeagueTier + "</rankedLeagueTier>" : "<rankedLeagueTier />")
+                + (rankedLeagueTier != null ? ( !rankedLeagueTier.equals("UNRANKED") ? "<rankedLeagueTier>" + rankedLeagueTier + "</rankedLeagueTier>" : "<rankedLeagueTier />" ) : "<rankedLeagueTier />")
                 + (rankedLeagueQueue != null ? "<rankedLeagueQueue>" + rankedLeagueQueue + "</rankedLeagueQueue>" : "<rankedLeagueQueue />")
                 + "<gameStatus>outOfGame</gameStatus>"
-                + (statusMsg != null ? "<statusMsg>" + statusMsg + "</statusMsg>" : "<statusMsg />")
+                + (statusMsg != null ? "<statusMsg>" + statusMsgText + "</statusMsg>" : "<statusMsg />")
                 + "</body>\n";
 
         return status;

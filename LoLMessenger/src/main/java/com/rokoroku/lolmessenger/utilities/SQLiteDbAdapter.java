@@ -181,13 +181,9 @@ public class SQLiteDbAdapter extends SQLiteOpenHelper {
     }
 
     // Delete related records
-    public int deleteAllRecords(String user) {
+    public int deleteAllRecords() {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM " + TABLE_NAME
-                + " WHERE (" + KEY_FROM + " = '" + user
-                + " OR " + KEY_TO + " = '" + user+ "'";
-        Cursor cursor = db.rawQuery(query, null);
-        return cursor.getCount();
+        return db.delete(TABLE_NAME, null, null);
     }
 
     public ArrayList<ChatInformation> getChatList(String user) {

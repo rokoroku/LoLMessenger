@@ -12,7 +12,7 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:id="@+id/imageChampion"
-            android:src="@drawable/profile_icon_502"
+            android:src="@drawable/profile_icon_8"
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:focusableInTouchMode="false"/>
@@ -170,7 +170,7 @@
                 android:layout_gravity="right"
                 android:textStyle="normal"
                 android:textSize="12dp"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="#999"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"
                 android:singleLine="true"/>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="client_version">3.11.xx</string>
+    <string name="client_version_2">3.12.xx</string>
+
+    <string name="app_name">LOL Messenger</string>
+    <string name="action_settings">환경 설정</string>
+    <string name="hello_world">Hello world!</string>
+
+    <string name="title_activity_login">PVP.net 접속</string>
+    <string name="sign_in">로그인</string>
+    <string name="hint_id">PVP.net ID</string>
+    <string name="hint_password">Password</string>
+    <string name="remember_account">암호 저장</string>
+    <string name="login_automatically">자동 로그인</string>
+    <string name="connecting_message">접속 시도 중…</string>
+    <string name="login_progress_signing_in">접속 시도 중…</string>
+    <string name="error_field_required">제대로 입력하세요.</string>
+
+    <string name="title_activity_client">ClientActivity</string>
+    <string name="title_activity_chat">ChatActivity</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_editing">상태메세지 변경</string>
+    <string name="title_settings">환경 설정</string>
+    <string name="title_buddylist">친구 목록</string>
+    <string name="title_chatlist">대화 목록</string>
+
+    <string name="action_logout">로그아웃</string>
+    <string name="action_refresh">새로고침</string>
+    <string name="action_delete_chat">대화 삭제</string>
+    <string name="action_clear">지우기</string>
+    <string name="action_send">전송</string>
+    <string name="action_chat">대화</string>
+    <string name="action_view">정보</string>
+    <string name="action_accept">수락</string>
+    <string name="action_reject">거절</string>
+
+    <string name="client_spinner_item_01">온라인</string>
+    <string name="client_spinner_item_02">자리 비움</string>
+    <string name="client_spinner_item_03">오프라인 표시</string>
+    <string name="client_spinner_item_04">환경 설정</string>
+    <string name="client_spinner_item_05">종료</string>
+
+    <string name="status_inGame">게임 중</string>
+    <string name="status_inNormalGame">일반 게임 중</string>
+    <string name="status_inRankedGame">랭크 게임 중</string>
+    <string name="status_inCustomGame">커스텀 게임 중</string>
+    <string name="status_inAIGame">협동 게임 중</string>
+    <string name="status_teamSelect">챔피언 선택 중</string>
+    <string name="status_hostingPracticeGame">사용자 게임 생성 중</string>
+    <string name="status_nowPlayingChamp">플레이 중인 챔피언</string>
+    <string name="status_lookingNewGame">게임 찾는 중</string>
+    <string name="status_timestamp_minute">분</string>
+    <string name="status_away">자리 비움</string>
+    <string name="status_online">온라인</string>
+    <string name="status_offline">오프라인</string>
+    <string name="status_level">레벨</string>
+    <string name="status_league_point">LP</string>
+    <string name="status_first_win_bonus_available">보너스 획득 가능</string>
+
+    <string name="error_failure_retrieving_chatting_list">대화 목록을 불러오는 데 실패하였습니다.</string>
+    <string name="error_failure_retrieving_summoner">소환사 정보를 불러오는 데 실패하였습니다.</string>
+    <string name="error_failure_retrieving_roster">친구 목록을 불러오는 데 실패하였습니다.</string>
+
+    <string name="dialog_title_delete_all_chatting_log">대화 기록 삭제</string>
+    <string name="dialog_title_delete_chat">대화 삭제</string>
+    <string name="dialog_content_delete_chatting_log">정말 삭제하시겠습니까?\n삭제된 데이터는 복구가 불가능합니다.</string>
+
+    <string name="dialog_title_logout">로그아웃</string>
+    <string name="dialog_content_logout">정말 로그아웃 하시겠습니까?</string>
+
+    <string name="dialog_title_exit">어플리케이션 종료</string>
+    <string name="dialog_content_exit">정말 종료하시겠습니까?</string>
+
+    <string name="error_login_failed_timeout">연결 시간이 초과되었습니다. 잠시 후 다시 시도하세요.</string>
+    <string name="error_login_failed_interrupted">로그인 과정이 취소되었습니다.</string>
+    <string name="error_login_failed_not_responding">서버가 응답하지 않습니다. 잠시 후 다시 시도하세요.</string>
+    <string name="error_login_failed_check_connection">접속에 실패하였습니다. 인터넷 연결을 확인하세요.</string>
+    <string name="spinner_login_title_choose_server">접속할 서버를 선택하세요.</string>
+    <string name="notification_lost_connection">연결이 끊어졌습니다.</string>
+    <string name="notification_lost_connection_on_error">연결이 끊어졌습니다.</string>
+    <string name="notification_reconnecting">재연결 중…</string>
+    <string name="notification_disconnected">연결이 끊어졌습니다.</string>
+    <string name="notification_reconnection_failed">재연결에 실패하였습니다.</string>
+    <string name="notification_app_running">LOL messenger가 실행 중입니다.</string>
+    <string name="notification_login_as">Connected as </string>
+    <string name="login_process_connecting">연결 중…</string>
+    <string name="login_process_chattingserver">채팅 서버 접속 중…</string>
+    <string name="login_process_success">로그인 성공</string>
+    <string name="default_status_message">안드로이드 클라이언트 사용 중</string>
+
+    <string name="match_leave">탈주</string>
+    <string name="match_victory">승리</string>
+    <string name="match_defeat">패배</string>
+    <string name="match_exp">EXP</string>
+    <string name="match_ip">IP</string>
+
+    <string name="match_type_normal">일반 게임</string>
+    <string name="match_type_ranked">랭크 게임</string>
+    <string name="match_type_custom">사용자 설정 게임</string>
+    <string name="match_type_coop">AI 협동 게임</string>
+    <string name="match_mode_aram">무작위 총력전</string>
+    <string name="match_mode_classic">클래식</string>
+    <string name="match_mode_odin">도미니언</string>
+    <string name="match_mode_pick_blind">비공개 선택</string>
+    <string name="match_mode_pick_random">모두 무작위</string>
+    <string name="match_mode_draft_std">교차 선택</string>
+    <string name="match_mode_draft_tournament">토너먼트 드래프트</string>
+
+    <string name="setting_title_notification">알림</string>
+    <string name="setting_sound">소리</string>
+    <string name="setting_vibrate">진동</string>
+    <string name="setting_new_message_alert">새 메세지 알림</string>
+    <string name="setting_ongoing_notification">알림 하나로 표시</string>
+    <string name="setting_title_account">계정</string>
+    <string name="setting_account">ID</string>
+    <string name="setting_status_message">상태 메세지</string>
+    <string name="setting_title_others">기타</string>
+    <string name="setting_clear_logs">대화기록 삭제</string>
+    <string name="setting_title_about">정보</string>
+    <string name="setting_contact">건의 및 제보</string>
+    <string name="setting_license">License</string>
+    <string name="license">Asmack API (OpenLDAP license)\n - https://github.com/Flowdalic/asmack\n
+        \nLeagueLib (GPLv3 license)\n - https://github.com/achimala/leaguelib\n
+        \nLeague of Legends is trademarks or registered trademarks of Riot Games, Inc.
+    </string>
+
+    <string name="setting_title_friendlist">친구 목록</string>
+    <string name="setting_show_gametype">게임 종류 표시</string>
+    <string name="setting_show_champion">플레이 중 챔피언 표시</string>
+    <string name="setting_show_timestamp">경과 시간 표시</string>
+
+    <string name="status_message_hint">내 상태 변경하기</string>
+    <string name="status_spectating">관전 중</string>
+    <string name="error_check_password">비밀번호를 확인하세요.</string>
+    <string name="action_back_to_quit">한번 더 누르시면 취소됩니다.</string>
+    <string name="error_cancelled">취소되었습니다.</string>
+
+    <string name="notification_inbox_title">새 메세지</string>
+    <string name="message_logging_in_line">현재 대기 순위: </string>
+    <string name="error_wrong_client_version">클라이언트 버전 오류, 다음 버전으로 재시도합니다: </string>
+    <string name="unknown_entry_description">친구 목록에 없는 사용자입니다.</string>
+
+    <string name="dialog_title_buddy_subscription">친구 추가 요청</string>
+    <string name="dialog_content_buddy_subscription" formatted="false">%s 님이 당신을 목록에 추가하여 \n온라인 상태를 확인하고자 합니다.</string>
+
+    <string name="notification_title_buddy_subscription">친구 추가 요청</string>
+    <string name="notification_content_buddy_subscription" formatted="false">%s 님으로부터 친구 요청이 도착했습니다.</string>
+    <string name="message_invite_game" formatted="false">게임에 초대합니다.\n\n모드: %s\n맵: %s\n유형:%s</string>
+
+    <string name="default_group">일반</string>
+    <string name="notification_total_unread" formatted="false">읽지 않은 메세지 %d개</string>
+    <string name="setting_show_toast">메세지 팝업</string>
+
+</resources>

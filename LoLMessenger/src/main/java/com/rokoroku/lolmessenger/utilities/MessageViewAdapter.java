@@ -1,6 +1,7 @@
 package com.rokoroku.lolmessenger.utilities;
 
 import android.app.Activity;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,11 +9,14 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.rokoroku.lolmessenger.ChatActivity;
+import com.rokoroku.lolmessenger.LolMessengerApplication;
 import com.rokoroku.lolmessenger.R;
 import com.rokoroku.lolmessenger.classes.ParcelableMessage;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by Youngrok Kim on 13. 8. 19.
@@ -53,7 +57,7 @@ public class MessageViewAdapter extends BaseAdapter{
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         ParcelableMessage tempEntry = mListItem.get(i);
-        if(tempEntry.getFromID().equals( ((ChatActivity)activity).getUserID() )) {
+        if(tempEntry.getFromID().contains(LolMessengerApplication.getUserJID())) {
             //view inflate of my message
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.row_chat_user, null);
@@ -74,22 +78,38 @@ public class MessageViewAdapter extends BaseAdapter{
         }
         //edit Name TextView
         TextView messageView = (TextView) convertView.findViewById(R.id.textViewMessage);
+        if(tempEntry.getBody().contains("\n")) messageView.setGravity(Gravity.CENTER_HORIZONTAL);
         messageView.setText(tempEntry.getBody());
+
 
         //edit Timestamp
         TextView timestampView = (TextView) convertView.findViewById(R.id.textViewTimestamp);
+
         Date today = new Date();
         String timeString;
 
-        long diff = ( today.getTime() - tempEntry.getTimeStamp() ) / (24 * 60 * 60 * 1000);
-        if(diff == 0) {
-            timeString = new String(String.format("%tR", tempEntry.getTimeStamp()));
+        if(removeTime(new Date(tempEntry.getTimeStamp())).before(removeTime(today))) {
+            if( Locale.getDefault().getLanguage().equals("ko") ) { //\uC77C == 일
+                timeString = String.format("%tb %<te\uC77C\n%<tR", tempEntry.getTimeStamp());
+            } else {
+                timeString = String.format("%tb %<te\n%<tR", tempEntry.getTimeStamp());
+            }
         } else {
-            timeString = new String(String.format("%tb %<te", tempEntry.getTimeStamp()));
+            timeString = String.format("%tR", tempEntry.getTimeStamp());
         }
 
         timestampView.setText(timeString);
 
         return convertView;
+    }
+
+    public Date removeTime(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
     }
 }
