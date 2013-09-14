@@ -5,7 +5,7 @@ League of Legends Messenger Client for Android
 
 Since this is my first project on Android, program codes might be complex.
 
-This project doesn't include any external libraries. To compile, you need to include below two library into project.
+This project doesn't include all of external libraries. To compile, you need to include below two library into project.
 
 Please let me know if there is any problem like license violation.
 
@@ -16,8 +16,4 @@ Works above API Level 13 (Android 3.2, Honeycomb) & Target API Level 16 (Android
 
 * [Asmack API 0.8.3](https://github.com/Flowdalic/asmack) (under OpenLDAP public license) 
 
-* [LeagueLib](https://github.com/achimala/leaguelib) (under GPLv3 license) - You might need to use [this modified branch](https://github.com/rokoroku/leaguelib) to compile.
-* 
-
-
-
+* [LeagueLib](https://github.com/achimala/leaguelib) (under GPLv3 license) 
