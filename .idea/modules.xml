@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/LoLMessenger/LoLMessenger.iml" filepath="$PROJECT_DIR$/LoLMessenger/LoLMessenger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LoLMessengerProject.iml" filepath="$PROJECT_DIR$/LoLMessengerProject.iml" />
+    </modules>
+  </component>
+</project>
+
